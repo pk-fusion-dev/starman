@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LicenseExpireScreen extends StatefulWidget {
-  LicenseExpireScreen({super.key});
+  const LicenseExpireScreen({super.key});
 
   @override
   State<LicenseExpireScreen> createState() => _LicenseExpireScreenState();

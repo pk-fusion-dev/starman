@@ -32,7 +32,7 @@ final appRoute = GoRouter(routes: [
   GoRoute(
     path: RoutePath.expire,
     name: RouteName.expire,
-    builder: (context, state) => LicenseExpireScreen(),
+    builder: (context, state) => const LicenseExpireScreen(),
   ),
   GoRoute(
     path: RoutePath.profitLost,
