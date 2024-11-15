@@ -31,7 +31,6 @@ migrate_working_dir/
 .pub/
 /build/
 .env
-/lib/core/config/fusion_config.dart
 
 # Symbolication related
 app.*.symbols

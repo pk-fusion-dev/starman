@@ -1,10 +1,17 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FusionConfig {
-  static const String _userName = 'fusion_dev';
-  static const String _password = 'fusion_dev';
-  static String basicAuth =
-      'Basic ${base64.encode(utf8.encode('$_userName:$_password'))}';
-  static const String token =
-      "\$2a\$10\$wl2BjK4NHQwB6npW2xOWCOyFN/x3s92TKnLdSDFSVnTCuxIDg8mVG";
+  static Future<Map<String, String>> getHeader() async {
+    await dotenv.load(fileName: ".env");
+    String userName = dotenv.env['FUSION_USERNAME']!;
+    String password = dotenv.env['FUSION_PASSWORD']!;
+    String token = dotenv.env['FUSION_TOKEN']!;
+    String basicAuth =
+        'Basic ${base64.encode(utf8.encode('$userName:$password'))}';
+    return {
+      "Authorization": basicAuth,
+      "SECRET_ACCESS_TOKEN": token,
+    };
+  }
 }

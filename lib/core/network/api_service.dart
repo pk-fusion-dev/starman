@@ -6,18 +6,15 @@ class ApiService {
   final starGroup = "/getStarGroup";
   final lastSubscription = "/getLastSubscription";
 
-  var header = <String, String>{
-    'Authorization': FusionConfig.basicAuth,
-    'SECRET_ACCESS_TOKEN': FusionConfig.token
-  };
-
   Future<http.Response> getStarGroup({required String starID}) async {
     final uri = Uri.parse("$baseUrl/$starGroup?starId=$starID");
+    var header = await FusionConfig.getHeader();
     return await http.post(uri, headers: header);
   }
 
   Future<http.Response> getLastSubscription({required String starID}) async {
     final uri = Uri.parse("$baseUrl/$lastSubscription?starId=$starID");
+    var header = await FusionConfig.getHeader();
     return await http.post(uri, headers: header);
   }
 }
