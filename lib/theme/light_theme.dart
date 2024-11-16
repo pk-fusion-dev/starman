@@ -7,6 +7,12 @@ final lightTheme = ThemeData(
     primary: Colors.green,
     secondary: Colors.white,
   ),
+  appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.green,
+      foregroundColor: Colors.white,
+      titleTextStyle: TextStyle(
+        fontSize: 14,
+      )),
   textTheme: const TextTheme(
     labelLarge: TextStyle(
       color: Colors.green,

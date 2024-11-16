@@ -41,14 +41,18 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
         LastSubscriptionModel lastSubscriptionModel = await ref
             .read(licenseServiceProvider)
             .getLastSubscription(starID: starID);
-        prefs.setString("starID", starID);
+        // prefs.setString("starID", starID);
+        // prefs.setString("endDate", lastSubscriptionModel.licenseInfo!.endDate!);
         if (lastSubscriptionModel.licenseInfo?.licenseStatus == "ACTIVE") {
           // ignore: use_build_context_synchronously
           // context.goNamed(RouteName.expire);
           screenLockCreate(
             // ignore: use_build_context_synchronously
             context: context,
+            canCancel: false,
             onConfirmed: (pin) {
+              prefs.setString("starID", starID);
+              prefs.setString("endDate", lastSubscriptionModel.licenseInfo!.endDate!);
               prefs.setString("passcode", pin);
               context.goNamed(RouteName.profitLost);
             },

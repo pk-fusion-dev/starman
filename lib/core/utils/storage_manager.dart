@@ -14,7 +14,6 @@ class StorageManager {
     return _instance!;
   }
 
-
   void setString(String key, String value) async{
     await prefs.setString(key, value);
   }
