@@ -13,7 +13,9 @@ class LoadingWidget extends StatelessWidget {
     return Container(
       color: Colors.black.withOpacity(0.5),
       child: const Center(
-        child: CupertinoActivityIndicator(),
+        child: CupertinoActivityIndicator(
+          radius: 20,
+        ),
       ),
     );
   }

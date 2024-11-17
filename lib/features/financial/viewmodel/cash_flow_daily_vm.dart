@@ -18,7 +18,7 @@ class CashFlowDailyVm extends _$CashFlowDailyVm {
   }
 
   Future<void> fetchData({required Map<String, String> params}) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true,errorMessage: null);
     try {
       final datas = await financialService.getCFDailyReport(params: params);
       allData = datas;

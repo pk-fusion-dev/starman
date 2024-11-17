@@ -1,18 +1,18 @@
 class CashFlowDailyModel {
-  final List<StarCFByDateDetail> starCFByDateDetailList;
-  final double starTotalIncome;
-  final double starTotalExpense;
-  final double starTotalBalance;
-  final String starFilter;
-  final String starCurrency;
+  final List<StarCFByDateDetail>? starCFByDateDetailList;
+  final double? starTotalIncome;
+  final double? starTotalExpense;
+  final double? starTotalBalance;
+  final String? starFilter;
+  final String? starCurrency;
 
   CashFlowDailyModel({
-    required this.starCFByDateDetailList,
-    required this.starTotalIncome,
-    required this.starTotalExpense,
-    required this.starTotalBalance,
-    required this.starFilter,
-    required this.starCurrency,
+    this.starCFByDateDetailList,
+    this.starTotalIncome,
+    this.starTotalExpense,
+    this.starTotalBalance,
+    this.starFilter,
+    this.starCurrency,
   });
 
   factory CashFlowDailyModel.fromJson(Map<String, dynamic> json) {
@@ -20,11 +20,11 @@ class CashFlowDailyModel {
       starCFByDateDetailList: (json['starCFByDateDetailList'] as List)
           .map((item) => StarCFByDateDetail.fromJson(item))
           .toList(),
-      starTotalIncome: json['starTotalIncome'].toDouble(),
-      starTotalExpense: json['starTotalExpense'].toDouble(),
-      starTotalBalance: json['starTotalBalance'].toDouble(),
-      starFilter: json['starFilter'],
-      starCurrency: json['starCurrency'],
+      starTotalIncome: json['starTotalIncome'].toDouble() ?? 0,
+      starTotalExpense: json['starTotalExpense'].toDouble() ?? 0,
+      starTotalBalance: json['starTotalBalance'].toDouble() ?? 0,
+      starFilter: json['starFilter'] ?? '',
+      starCurrency: json['starCurrency'] ?? '',
     );
   }
 
@@ -40,16 +40,16 @@ class CashFlowDailyModel {
 }
 
 class StarCFByDateDetail {
-  final String starDate;
-  final double starIncome;
-  final double starExpense;
-  final double starBalance;
+  String? starDate;
+  double? starIncome;
+  double? starExpense;
+  double? starBalance;
 
   StarCFByDateDetail({
-    required this.starDate,
-    required this.starIncome,
-    required this.starExpense,
-    required this.starBalance,
+    this.starDate,
+    this.starIncome,
+    this.starExpense,
+    this.starBalance,
   });
 
   factory StarCFByDateDetail.fromJson(Map<String, dynamic> json) {

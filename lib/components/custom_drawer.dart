@@ -112,7 +112,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       context,
                       const Icon(Icons.attach_money),
                       "ဝင်ငွေ/အသုံးစရိတ်အစီရင်ခံစာ",
-                      () {},
+                      () {
+                        context.goNamed(RouteName.expense);
+                      },
                     ),
                   ],
                 ),
@@ -130,7 +132,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
       child: ListTile(
         leading: icon,
         iconColor: Theme.of(context).colorScheme.primary,
-        title: Text(title),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 12),
+        ),
         onTap: fun,
       ),
     );

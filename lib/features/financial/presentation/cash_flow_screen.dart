@@ -37,6 +37,13 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
+    if(cashFlowState.errorMessage!=null){
+      Fluttertoast.showToast(
+          msg: "Operation fails",
+          gravity: ToastGravity.CENTER,
+          toastLength: Toast.LENGTH_SHORT
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(

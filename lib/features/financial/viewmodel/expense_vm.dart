@@ -1,28 +1,28 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:starman/features/financial/models/cash_flow_model.dart';
+import 'package:starman/features/financial/models/expense_model.dart';
 import 'package:starman/features/financial/providers/financial_service_provider.dart';
 import 'package:starman/features/financial/services/financial_service.dart';
 
 import '../../../core/utils/zip_manager.dart';
-part 'cash_flow_vm.g.dart';
+part 'expense_vm.g.dart';
 
 @riverpod
-class CashFlowVm extends _$CashFlowVm {
+class ExpenseVm extends _$ExpenseVm {
   late final FinancialService financialService;
-  List<CashFlowModel> allData = [];
-  List<CashFlowModel> filterData = [];
+  List<ExpenseModel> allData = [];
+  List<ExpenseModel> filterData = [];
   @override
-  CashFlowState build() {
+  ExpenseState build() {
     financialService = ref.read(financialServiceProvider);
-    return CashFlowState.initial();
+    return ExpenseState.initial();
   }
 
   Future<void> fetchData({required Map<String, String> params}) async {
-    state = state.copyWith(isLoading: true,errorMessage: null);
+    state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final datas = await financialService.getCFReport(params: params);
+      final datas = await financialService.getExpenseReport(params: params);
       allData = datas;
-      state = CashFlowState.success(datas);
+      state = ExpenseState.success(datas);
     } catch (e) {
       // print(e.toString());
       state = state.copyWith(
@@ -35,18 +35,19 @@ class CashFlowVm extends _$CashFlowVm {
     state = state.copyWith(isLoading: true);
     try {
       var datas =
-          await ZipManager.loadData("StarCF.json", CashFlowModel.fromJson);
+          await ZipManager.loadData("StarEXP.json", ExpenseModel.fromJson);
       for (var data in datas) {
         allData.add(data);
       }
-      state = CashFlowState.success(allData);
+      state = ExpenseState.success(allData);
     } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }
   }
 
-  Future<void> loadDataByDate({required String date}) async {
+  Future<void> loadDataByFilter(
+      {required int type, required String date}) async {
     filterData.clear();
     state = state.copyWith(isLoading: true);
     try {
@@ -55,7 +56,7 @@ class CashFlowVm extends _$CashFlowVm {
           filterData.add(data);
         }
       }
-      state = CashFlowState.success(filterData);
+      state = ExpenseState.success(filterData);
     } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
@@ -63,24 +64,25 @@ class CashFlowVm extends _$CashFlowVm {
   }
 }
 
-class CashFlowState {
+class ExpenseState {
   final bool isLoading;
   final String? errorMessage;
-  final List<CashFlowModel> datas;
+  final List<ExpenseModel> datas;
 
-  CashFlowState(
+  ExpenseState(
       {required this.isLoading, this.errorMessage, required this.datas});
 
-  factory CashFlowState.initial() => CashFlowState(isLoading: false, datas: []);
+  factory ExpenseState.initial() => ExpenseState(isLoading: false, datas: []);
 
-  factory CashFlowState.success(List<CashFlowModel> datas) =>
-      CashFlowState(isLoading: false, datas: datas, errorMessage: null);
+  factory ExpenseState.success(List<ExpenseModel> datas) =>
+      ExpenseState(isLoading: false, datas: datas, errorMessage: null);
 
-  CashFlowState copyWith(
-      {bool? isLoading, String? errorMessage, List<CashFlowModel>? datas}) {
-    return CashFlowState(
-        isLoading: isLoading ?? this.isLoading,
-        errorMessage: errorMessage ?? this.errorMessage,
-        datas: datas ?? this.datas);
+  ExpenseState copyWith(
+      {bool? isLoading, String? errorMessage, List<ExpenseModel>? datas}) {
+    return ExpenseState(
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage ?? this.errorMessage,
+      datas: datas ?? this.datas,
+    );
   }
 }

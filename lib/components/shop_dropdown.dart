@@ -14,18 +14,6 @@ class ShopDropdown extends ConsumerWidget {
     if (datas.isEmpty) {
       ref.read(starLinksProvider.notifier).getStarLinks();
     }
-    // if(selectedItem==null && datas.isNotEmpty){
-    //   selectedItem = datas[0].userId;
-    // }
-    // return DropdownMenu(
-    //   initialSelection: datas.isNotEmpty ? datas[0].userId : null,
-    //   width: 150,
-    //   dropdownMenuEntries: datas.map((data) {
-    //     return DropdownMenuEntry(
-    //         value: data.userId, label: data.warehouseName.toString());
-    //   }).toList(),
-    //   onSelected: onSelected,
-    // );
     return DropdownButton<String>(
       value: selectedItem,
       items: datas.map((data) {

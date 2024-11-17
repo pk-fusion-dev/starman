@@ -37,6 +37,13 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
+    if(profitLoseState.errorMessage!=null){
+      Fluttertoast.showToast(
+          msg: "Operation fails",
+          gravity: ToastGravity.CENTER,
+          toastLength: Toast.LENGTH_SHORT
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(

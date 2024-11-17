@@ -18,7 +18,7 @@ class ProfitLoseVm extends _$ProfitLoseVm {
   }
 
   Future<void> fetchData({required Map<String, String> params}) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true,errorMessage: null);
     try {
       final datas = await financialService.getPLReport(params: params);
       allData = datas;

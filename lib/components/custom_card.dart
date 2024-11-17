@@ -8,7 +8,7 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         boxShadow: [BoxShadow(color: Colors.grey.withOpacity(.3))],
       ),
@@ -24,7 +24,7 @@ class CustomCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Container(
-            margin: const EdgeInsets.all(10),
+            margin: const EdgeInsets.all(0),
             child: Column(
               children: children,
             ),

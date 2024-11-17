@@ -6,7 +6,7 @@ part of 'cash_flow_vm.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$cashFlowVmHash() => r'094086c1c54379e81abdcac5099a7187953240a2';
+String _$cashFlowVmHash() => r'0fc7dbdcc9cdfc97be744a30fd95e2525b28f32d';
 
 /// See also [CashFlowVm].
 @ProviderFor(CashFlowVm)

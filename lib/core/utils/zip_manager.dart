@@ -65,6 +65,7 @@ class ZipManager {
       String jsonData = await file.readAsString();
       // Decode the JSON
       List<dynamic> parsedJson = jsonDecode(jsonData);
+      // log(parsedJson.toString());
       // Assuming each item in the list is a map and filtering by selectedDateFilter
       var datas = parsedJson.map((data) => fromJson(data)).toList();
       return datas;

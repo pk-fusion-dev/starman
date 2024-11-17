@@ -7,8 +7,8 @@ import 'package:starman/components/custom_drawer.dart';
 import 'package:starman/components/fusion_date_picker.dart';
 import 'package:starman/components/loading_indicator.dart';
 import 'package:starman/components/shop_dropdown.dart';
+import 'package:starman/features/financial/models/cash_flow_daily_model.dart';
 import 'package:starman/features/financial/viewmodel/cash_flow_daily_vm.dart';
-import 'package:starman/features/financial/viewmodel/cash_flow_vm.dart';
 
 class CashFlowDailyScreen extends ConsumerStatefulWidget {
   const CashFlowDailyScreen({super.key});
@@ -39,6 +39,13 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
+    if(cashFlowDailyState.errorMessage!=null){
+      Fluttertoast.showToast(
+          msg: "Operation fails",
+          gravity: ToastGravity.CENTER,
+          toastLength: Toast.LENGTH_SHORT
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -51,7 +58,7 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
                 selectedDate = "Today";
-                await ref.read(cashFlowVmProvider.notifier).fetchData(
+                await ref.read(cashFlowDailyVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "CFD"});
               }
             },
@@ -72,16 +79,23 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
     );
   }
 
+  String formatedDecimal(num? num){
+    if(num!=null){
+      String formatedNum = num.toStringAsFixed(3);
+      formatedNum = formatedNum.contains('.')
+          ? formatedNum.replaceAll(RegExp(r'\.?0+$'), '')
+          : formatedNum;
+      return formatedNum;
+    }
+    return "0";
+  }
+
   Widget _buildBody(CashFlowDailyState state) {
-    // final CashFlowDailyModel data =
-    //     state.datas.isNotEmpty ? state.datas[0] : CashFlowDailyModel();
-    String totalIn = '0';
-    // if (data.starTotalCashIn != null) {
-    //   totalIn = data.starTotalCashIn!.toStringAsFixed(3);
-    //   totalIn = totalIn.contains('.')
-    //       ? totalIn.replaceAll(RegExp(r'\.?0+$'), '')
-    //       : totalIn;
-    // }
+    final CashFlowDailyModel data =
+        state.datas.isNotEmpty ? state.datas[0] : CashFlowDailyModel();
+    String totalIn = formatedDecimal(data.starTotalIncome);
+    String totalExp = formatedDecimal(data.starTotalExpense);
+    String totalBalance = formatedDecimal(data.starTotalBalance);
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -102,7 +116,7 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
                 selectedDate: selectedDate,
                 onSelected: (value) {
                   ref
-                      .read(cashFlowVmProvider.notifier)
+                      .read(cashFlowDailyVmProvider.notifier)
                       .loadDataByDate(date: value!);
                   setState(() {
                     selectedDate = value;
@@ -126,18 +140,47 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
                     Column(
                       children: [
                         const Text("စုစုပေါင်းထွက်ငွေ"),
-                        Text(totalIn),
+                        Text(totalExp),
                       ],
                     ),
                     Column(
                       children: [
                         const Text("စုစုပေါင်းကျန်ငွေ"),
-                        Text(totalIn),
+                        Text(totalBalance),
                       ],
                     ),
                   ],
                 ),
-                children: [],
+                children: [
+                  ListTile(
+                    titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                    title: const Row(
+                      children: [
+                        Expanded(child: Text("စဉ်")),
+                        Expanded(flex: 3,child: Text("နေ့စွဲ")),
+                        Expanded(flex: 2,child: Text("ဝင်ငွေ")),
+                        Expanded(flex: 2,child: Text("ထွက်ငွေ")),
+                        Expanded(flex: 2,child: Text("ကျန်ငွေ")),
+                      ],
+                    ),
+                  ),
+                  if(data.starCFByDateDetailList != null)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: data.starCFByDateDetailList!.length,
+                    itemBuilder: (context,index){
+                      var item = data.starCFByDateDetailList![index];
+                      return listItem(
+                        no: index,
+                        date: item.starDate,
+                        income: item.starIncome,
+                        expense: item.starExpense,
+                        balance: item.starBalance,
+                      );
+                    },
+                  )
+                ],
               ),
             ),
           ),
@@ -146,21 +189,17 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
     );
   }
 
-  Widget listItem(String title, double value, {bool? isOut}) {
-    String formatted = value.toStringAsFixed(3);
-    formatted = formatted.contains('.')
-        ? formatted.replaceAll(RegExp(r'\.?0+$'), '')
-        : formatted;
-    if (isOut ?? false) {
-      formatted = "($formatted)";
-    }
+  Widget listItem({int? no,String? date,double? income,double? expense,double? balance}) {
     return ListTile(
-      titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+      titleTextStyle: Theme.of(context).textTheme.bodySmall,
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title),
-          Text(formatted),
+          Expanded(child: Text(no.toString())),
+          Expanded(flex: 3,child: Text(date!)),
+          Expanded(flex: 2,child: Text(formatedDecimal(income))),
+          Expanded(flex: 2,child: Text(formatedDecimal(expense))),
+          Expanded(flex: 2,child: Text(formatedDecimal(balance))),
         ],
       ),
     );

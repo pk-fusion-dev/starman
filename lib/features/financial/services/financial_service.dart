@@ -1,6 +1,7 @@
 import 'package:starman/core/utils/zip_manager.dart';
 import 'package:starman/features/financial/models/cash_flow_daily_model.dart';
 import 'package:starman/features/financial/models/cash_flow_model.dart';
+import 'package:starman/features/financial/models/expense_model.dart';
 import 'package:starman/features/financial/models/profit_loss_model.dart';
 import 'package:starman/features/financial/repository/financial_repository.dart';
 
@@ -44,6 +45,20 @@ class FinancialService {
     await ZipManager.extractZipFile(zipFile!);
     var datas = await ZipManager.loadData(
         "StarCFByDate.json", CashFlowDailyModel.fromJson);
+    for (var data in datas) {
+      finalDatas.add(data);
+    }
+    return finalDatas;
+  }
+
+  Future<List<ExpenseModel>> getExpenseReport(
+      {required Map<String, String> params}) async {
+    List<ExpenseModel> finalDatas = [];
+    var response = await financialRepository.getFinancialReport(params: params);
+    var zipFile = await ZipManager.saveZip(response);
+    await ZipManager.extractZipFile(zipFile!);
+    var datas =
+        await ZipManager.loadData("StarEXP.json", ExpenseModel.fromJson);
     for (var data in datas) {
       finalDatas.add(data);
     }

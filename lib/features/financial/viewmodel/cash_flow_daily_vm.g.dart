@@ -6,7 +6,7 @@ part of 'cash_flow_daily_vm.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$cashFlowDailyVmHash() => r'9b702a2175625ebac998bbca03a6963185e176dd';
+String _$cashFlowDailyVmHash() => r'907c4229f68886309ff5569f22524e543a5ad396';
 
 /// See also [CashFlowDailyVm].
 @ProviderFor(CashFlowDailyVm)
