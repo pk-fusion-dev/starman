@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'expense_vm.dart';
+part of 'sold_item_vm.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$expenseVmHash() => r'1fec6d529e92bfbe71bd35688ea5194aa0bc9dc6';
+String _$soldItemVmHash() => r'bd5ae477e2b51486218b6260dc578b6a5952783f';
 
-/// See also [ExpenseVm].
-@ProviderFor(ExpenseVm)
-final expenseVmProvider =
-    AutoDisposeNotifierProvider<ExpenseVm, ExpenseState>.internal(
-  ExpenseVm.new,
-  name: r'expenseVmProvider',
+/// See also [SoldItemVm].
+@ProviderFor(SoldItemVm)
+final soldItemVmProvider =
+    AutoDisposeNotifierProvider<SoldItemVm, SoldItemState>.internal(
+  SoldItemVm.new,
+  name: r'soldItemVmProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$expenseVmHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$soldItemVmHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$ExpenseVm = AutoDisposeNotifier<ExpenseState>;
+typedef _$SoldItemVm = AutoDisposeNotifier<SoldItemState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

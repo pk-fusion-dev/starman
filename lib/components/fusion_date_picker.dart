@@ -26,6 +26,7 @@ class FusionDatePick extends StatelessWidget {
     //   ),
     // );
     return DropdownButton<String>(
+      dropdownColor: Colors.white,
       value: selectedDate,
       items: const [
         DropdownMenuItem(
@@ -46,7 +47,7 @@ class FusionDatePick extends StatelessWidget {
         ),
       ],
       onChanged: onSelected,
-      hint: const Text('Select Date'),
+      hint: const Text('Select Date',style: TextStyle(color: Colors.white),),
     );
   }
 }

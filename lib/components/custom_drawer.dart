@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/routers/router.dart';
+import 'package:starman/theme/color_const.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
@@ -16,6 +17,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   String? finalEndDate;
   String? starID;
   ExpansionTileController finanacialTile = ExpansionTileController();
+  ExpansionTileController salesTile = ExpansionTileController();
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     DateTime endDate = dateFormat.parse(endDateString);
     int remainingDays = endDate.difference(currentDate).inDays;
     setState(() {
-      finanacialTile.expand();
+      salesTile.expand();
       rmDay = remainingDays.toString();
       finalEndDate = endDateString;
       starID = prefs.getString("starID")!;
@@ -41,9 +43,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: Colors.white,
       child: Column(
         children: [
           DrawerHeader(
+            decoration: BoxDecoration(
+              color: ColorConst.lightSurface,
+            ),
             child: Row(
               children: [
                 SizedBox(
@@ -77,49 +83,69 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ],
             ),
           ),
-          Expanded(
-            child: ListView(
-              children: [
-                ExpansionTile(
-                  title: const Text("Financial Report"),
-                  controller: finanacialTile,
-                  children: [
-                    listItem(
-                      context,
-                      const Icon(Icons.attach_money),
-                      "အရှုံးအမြတ်အစီရင်ခံစာ",
-                      () {
-                        context.goNamed(RouteName.profitLost);
-                      },
-                    ),
-                    listItem(
-                      context,
-                      const Icon(Icons.attach_money),
-                      "ငွေအဝင်အထွက်အစီရင်ခံစာ",
-                      () {
-                        context.goNamed(RouteName.cashflow);
-                      },
-                    ),
-                    listItem(
-                      context,
-                      const Icon(Icons.attach_money),
-                      "နေ့အလိုက်ငွေအဝင်အထွက်အစီရင်ခံစာ",
-                      () {
-                        context.goNamed(RouteName.cashflowdaily);
-                      },
-                    ),
-                    listItem(
-                      context,
-                      const Icon(Icons.attach_money),
-                      "ဝင်ငွေ/အသုံးစရိတ်အစီရင်ခံစာ",
-                      () {
-                        context.goNamed(RouteName.expense);
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          Column(
+            children: [
+              ExpansionTile(
+                title: const Text("Financial Report"),
+                controller: finanacialTile,
+                children: [
+                  listItem(
+                    context,
+                    const Icon(Icons.attach_money),
+                    "အရှုံးအမြတ်အစီရင်ခံစာ",
+                    () {
+                      context.goNamed(RouteName.profitLost);
+                    },
+                  ),
+                  listItem(
+                    context,
+                    const Icon(Icons.attach_money),
+                    "ငွေအဝင်အထွက်အစီရင်ခံစာ",
+                    () {
+                      context.goNamed(RouteName.cashflow);
+                    },
+                  ),
+                  listItem(
+                    context,
+                    const Icon(Icons.attach_money),
+                    "နေ့အလိုက်ငွေအဝင်အထွက်အစီရင်ခံစာ",
+                    () {
+                      context.goNamed(RouteName.cashflowdaily);
+                    },
+                  ),
+                  listItem(
+                    context,
+                    const Icon(Icons.attach_money),
+                    "ဝင်ငွေ/အသုံးစရိတ်အစီရင်ခံစာ",
+                    () {
+                      context.goNamed(RouteName.expense);
+                    },
+                  ),
+                ],
+              ),
+              ExpansionTile(
+                title: const Text("Sales Report"),
+                controller: salesTile,
+                children: [
+                  listItem(
+                    context,
+                    const Icon(Icons.shopping_cart),
+                    "အရောင်းအစီရင်ခံစာ",
+                    () {
+                      context.goNamed(RouteName.sales);
+                    },
+                  ),
+                  listItem(
+                    context,
+                    const Icon(Icons.shopping_cart),
+                    "ကုန်ပစ္စည်းအရောင်းအစီရင်ခံစာ",
+                    () {
+                      context.goNamed(RouteName.soldItem);
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),

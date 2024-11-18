@@ -40,4 +40,15 @@ class ApiService {
     var header = await FusionConfig.getHeader();
     return await http.post(uri, headers: header);
   }
+
+  Future<http.Response> getSalesReport(
+      {required Map<String, String> params}) async {
+    final uri = Uri.https(
+      "api.fusionmyanmar.com",
+      "/rest/starman$saleReport",
+      params,
+    );
+    var header = await FusionConfig.getHeader();
+    return await http.post(uri, headers: header);
+  }
 }

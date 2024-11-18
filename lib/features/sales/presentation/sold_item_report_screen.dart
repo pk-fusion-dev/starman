@@ -7,40 +7,41 @@ import 'package:starman/components/custom_drawer.dart';
 import 'package:starman/components/fusion_date_picker.dart';
 import 'package:starman/components/loading_indicator.dart';
 import 'package:starman/components/shop_dropdown.dart';
-import 'package:starman/features/financial/models/expense_model.dart';
-import 'package:starman/features/financial/viewmodel/expense_vm.dart';
+import 'package:starman/features/sales/models/sold_item_model.dart';
+import 'package:starman/features/sales/viewmodel/sold_item_vm.dart';
 
-class ExpenseScreen extends ConsumerStatefulWidget {
-  const ExpenseScreen({super.key});
+class SoldItemReportScreen extends ConsumerStatefulWidget {
+  const SoldItemReportScreen({super.key});
 
   @override
-  ConsumerState<ExpenseScreen> createState() => _ExpenseScreenState();
+  ConsumerState<SoldItemReportScreen> createState() =>
+      _SoldItemReportScreenState();
 }
 
-class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
+class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
   String? selectedShop;
   String? selectedDate;
-  int type = 1;
   SharedPreferences? prefs;
-  List<StarIncExpList> starIncExpList = [];
-  double total = 0;
+  List<StarItemList> starItemList = [];
+  double totalStock = 0;
+  double totalAmount = 0;
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Durations.medium1, () async {
-      ref.read(expenseVmProvider.notifier).loadData();
+      ref.read(soldItemVmProvider.notifier).loadData();
       prefs = await SharedPreferences.getInstance();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final ExpenseState expenseState = ref.watch(expenseVmProvider);
+    final SoldItemState soldItemState = ref.watch(soldItemVmProvider);
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
-    if (expenseState.errorMessage != null) {
+    if (soldItemState.errorMessage != null) {
       Fluttertoast.showToast(
           msg: "Operation fails",
           gravity: ToastGravity.CENTER,
@@ -49,7 +50,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "ဝင်ငွေ/အသုံးစရိတ်အစီရင်ခံစာ",
+          "ကုန်ပစ္စည်းအရောင်းအစီရင်ခံစာ",
         ),
         actions: [
           IconButton(
@@ -57,10 +58,10 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
               if (selectedShop == null) {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
-                starIncExpList.clear();
+                starItemList.clear();
                 selectedDate = "Today";
-                await ref.read(expenseVmProvider.notifier).fetchData(
-                    params: {"user_id": selectedShop!, "type": "EXP"});
+                await ref.read(soldItemVmProvider.notifier).fetchData(
+                    params: {"user_id": selectedShop!, "type": "SI"});
               }
             },
             icon: Icon(
@@ -73,8 +74,8 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
       drawer: const CustomDrawer(),
       body: Stack(
         children: [
-          _buildBody(expenseState),
-          expenseState.isLoading ? const LoadingWidget() : Container(),
+          _buildBody(soldItemState),
+          soldItemState.isLoading ? const LoadingWidget() : Container(),
         ],
       ),
     );
@@ -91,17 +92,15 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     return "0";
   }
 
-  Widget _buildBody(ExpenseState state) {
-    final ExpenseModel data =
-        state.datas.isNotEmpty ? state.datas[0] : ExpenseModel();
-    total = 0;
-    if (data.starIncExpList != null) {
-      for (var item in data.starIncExpList!) {
-        if (item.starStatus == type) {
-          starIncExpList.add(item);
-          total += item.starAmount as double;
-        }
-      }
+  Widget _buildBody(SoldItemState state) {
+    final SoldItemModel data =
+        state.datas.isNotEmpty ? state.datas[0] : SoldItemModel();
+    totalStock = 0;
+    totalAmount = 0;
+    if (data.starItemList != null) {
+      starItemList = data.starItemList!;
+      totalStock = data.starTotalQty!;
+      totalAmount = data.starTotalAmount!;
     }
     return Container(
       padding: const EdgeInsets.all(10),
@@ -122,9 +121,9 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
               FusionDatePick(
                 selectedDate: selectedDate,
                 onSelected: (value) {
-                  starIncExpList.clear();
+                  starItemList.clear();
                   ref
-                      .read(expenseVmProvider.notifier)
+                      .read(soldItemVmProvider.notifier)
                       .loadDataByFilter(date: value!);
                   setState(() {
                     selectedDate = value;
@@ -133,42 +132,57 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
               ),
             ],
           ),
-          Row(
-            children: [
-              flowDropdown(data),
-            ],
-          ),
           Expanded(
             child: SingleChildScrollView(
               child: CustomCard(
-                title: Column(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text("စုစုပေါင်း(${data.starCurrency ?? ''})"),
-                    Text(total.toString()),
+                    Column(
+                      children: [
+                        const Text("ကုန်ပစ္စည်းအရေအတွက်"),
+                        Text(
+                          formatedDecimal(totalStock),
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const Text("ကျသင့်ငွေပေါင်း"),
+                        Text(
+                          totalAmount.toString(),
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 children: [
                   ListTile(
                     titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                    textColor: Theme.of(context).colorScheme.secondary,
                     title: const Row(
                       children: [
                         Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3, child: Text("အမျိုးအစား")),
+                        Expanded(flex: 3, child: Text("ပြေစာအမှတ်")),
+                        Expanded(flex: 2, child: Text("ကျသင့်ငွေ")),
                         Expanded(flex: 1, child: Text("ပေးငွေ")),
                       ],
                     ),
                   ),
-                  if (data.starIncExpList != null)
+                  if (data.starItemList != null)
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: starIncExpList.length,
+                      itemCount: starItemList.length,
                       itemBuilder: (context, index) {
-                        var item = starIncExpList[index];
-                        if (item.starStatus != type) return Container();
+                        var item = starItemList[index];
+                        // if (item.starUserName != user) return Container();
                         return listItem(
                           no: index + 1,
-                          type: item.starName,
+                          name: item.starItemName,
+                          quantity: item.starQty,
                           amount: item.starAmount,
                         );
                       },
@@ -182,7 +196,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     );
   }
 
-  Widget listItem({int? no, String? type, double? amount}) {
+  Widget listItem({int? no, String? name, double? quantity, double? amount}) {
     return ListTile(
       titleTextStyle: Theme.of(context).textTheme.bodySmall,
       textColor: Theme.of(context).colorScheme.secondary,
@@ -190,41 +204,11 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(child: Text(no.toString())),
-          Expanded(flex: 3, child: Text(type!)),
+          Expanded(flex: 3, child: Text(name!)),
+          Expanded(flex: 2, child: Text(formatedDecimal(quantity))),
           Expanded(flex: 1, child: Text(formatedDecimal(amount))),
         ],
       ),
-    );
-  }
-
-  Widget flowDropdown(ExpenseModel data) {
-    return DropdownButton<String>(
-      value: type.toString(),
-      items: const [
-        DropdownMenuItem(
-          value: "1",
-          child: Text("ဝင်ငွေ"),
-        ),
-        DropdownMenuItem(
-          value: "2",
-          child: Text("ထွက်ငွေ"),
-        ),
-        DropdownMenuItem(
-          value: "3",
-          child: Text("အခြား"),
-        ),
-      ],
-      onChanged: (value) {
-        starIncExpList.clear();
-        type = int.parse(value!);
-        // for (var item in data.starIncExpList!) {
-        //   if (item.starStatus == type) {
-        //     starIncExpList.add(item);
-        //   }
-        // }
-        setState(() {});
-      },
-      hint: const Text('Type'),
     );
   }
 }

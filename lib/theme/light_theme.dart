@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:starman/theme/color_const.dart';
 
 final lightTheme = ThemeData(
   colorScheme: ColorScheme.light(
     brightness: Brightness.light,
-    surface: Colors.grey.shade100,
-    primary: Colors.green,
+    surface: ColorConst.lightSurface,
+    primary: ColorConst.lightPrimary,
     secondary: Colors.white,
   ),
-  appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.green,
+  appBarTheme: AppBarTheme(
+      backgroundColor: ColorConst.lightPrimary,
       foregroundColor: Colors.white,
-      titleTextStyle: TextStyle(
+      titleTextStyle: const TextStyle(
         fontSize: 14,
       )),
   textTheme: const TextTheme(
@@ -21,6 +22,10 @@ final lightTheme = ThemeData(
     labelSmall: TextStyle(
       color: Colors.black,
       fontSize: 11,
+    ),
+    bodyMedium: TextStyle(
+      color: Colors.white,
+      fontSize: 13,
     ),
   ),
 );

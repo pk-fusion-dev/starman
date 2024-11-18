@@ -178,6 +178,7 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
     }
     return ListTile(
       titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+      textColor: Theme.of(context).colorScheme.secondary,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

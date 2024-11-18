@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:starman/theme/color_const.dart';
 
 class CustomCard extends StatelessWidget {
   const CustomCard({super.key, required this.title, required this.children});
@@ -10,7 +11,8 @@ class CustomCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(.3))],
+        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(.5))],
+        color: ColorConst.lightSurface,
       ),
       child: Column(
         children: [

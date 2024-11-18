@@ -192,6 +192,7 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
   Widget listItem({int? no,String? date,double? income,double? expense,double? balance}) {
     return ListTile(
       titleTextStyle: Theme.of(context).textTheme.bodySmall,
+      textColor: Theme.of(context).colorScheme.secondary,
       title: Row(
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

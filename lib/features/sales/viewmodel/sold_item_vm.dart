@@ -1,28 +1,27 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:starman/features/financial/models/expense_model.dart';
-import 'package:starman/features/financial/providers/financial_service_provider.dart';
-import 'package:starman/features/financial/services/financial_service.dart';
-
+import 'package:starman/features/sales/models/sold_item_model.dart';
+import 'package:starman/features/sales/providers/sales_service_provider.dart';
+import 'package:starman/features/sales/services/sales_service.dart';
 import '../../../core/utils/zip_manager.dart';
-part 'expense_vm.g.dart';
+part 'sold_item_vm.g.dart';
 
 @riverpod
-class ExpenseVm extends _$ExpenseVm {
-  late final FinancialService financialService;
-  List<ExpenseModel> allData = [];
-  List<ExpenseModel> filterData = [];
+class SoldItemVm extends _$SoldItemVm {
+  late final SalesService salesService;
+  List<SoldItemModel> allData = [];
+  List<SoldItemModel> filterData = [];
   @override
-  ExpenseState build() {
-    financialService = ref.read(financialServiceProvider);
-    return ExpenseState.initial();
+  SoldItemState build() {
+    salesService = ref.read(salesServiceProvider);
+    return SoldItemState.initial();
   }
 
   Future<void> fetchData({required Map<String, String> params}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final datas = await financialService.getExpenseReport(params: params);
+      final datas = await salesService.getSIReport(params: params);
       allData = datas;
-      state = ExpenseState.success(datas);
+      state = SoldItemState.success(datas);
     } catch (e) {
       // print(e.toString());
       state = state.copyWith(
@@ -35,11 +34,11 @@ class ExpenseVm extends _$ExpenseVm {
     state = state.copyWith(isLoading: true);
     try {
       var datas =
-          await ZipManager.loadData("StarEXP.json", ExpenseModel.fromJson);
+          await ZipManager.loadData("StarSI.json", SoldItemModel.fromJson);
       for (var data in datas) {
         allData.add(data);
       }
-      state = ExpenseState.success(allData);
+      state = SoldItemState.success(allData);
     } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
@@ -55,7 +54,7 @@ class ExpenseVm extends _$ExpenseVm {
           filterData.add(data);
         }
       }
-      state = ExpenseState.success(filterData);
+      state = SoldItemState.success(filterData);
     } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
@@ -63,22 +62,22 @@ class ExpenseVm extends _$ExpenseVm {
   }
 }
 
-class ExpenseState {
+class SoldItemState {
   final bool isLoading;
   final String? errorMessage;
-  final List<ExpenseModel> datas;
+  final List<SoldItemModel> datas;
 
-  ExpenseState(
+  SoldItemState(
       {required this.isLoading, this.errorMessage, required this.datas});
 
-  factory ExpenseState.initial() => ExpenseState(isLoading: false, datas: []);
+  factory SoldItemState.initial() => SoldItemState(isLoading: false, datas: []);
 
-  factory ExpenseState.success(List<ExpenseModel> datas) =>
-      ExpenseState(isLoading: false, datas: datas, errorMessage: null);
+  factory SoldItemState.success(List<SoldItemModel> datas) =>
+      SoldItemState(isLoading: false, datas: datas, errorMessage: null);
 
-  ExpenseState copyWith(
-      {bool? isLoading, String? errorMessage, List<ExpenseModel>? datas}) {
-    return ExpenseState(
+  SoldItemState copyWith(
+      {bool? isLoading, String? errorMessage, List<SoldItemModel>? datas}) {
+    return SoldItemState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
       datas: datas ?? this.datas,
