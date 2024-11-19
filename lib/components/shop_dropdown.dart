@@ -15,7 +15,10 @@ class ShopDropdown extends ConsumerWidget {
       ref.read(starLinksProvider.notifier).getStarLinks();
     }
     return DropdownButton<String>(
-      dropdownColor: Theme.of(context).colorScheme.secondary,
+      // dropdownColor: Theme.of(context).colorScheme.secondary,
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.secondary,
+      ),
       value: selectedItem,
       items: datas.map((data) {
         return DropdownMenuItem<String>(

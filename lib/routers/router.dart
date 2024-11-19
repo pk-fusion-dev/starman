@@ -6,6 +6,8 @@ import 'package:starman/features/license/presentation/license_expire_screen.dart
 import 'package:starman/features/license/presentation/register_starid_screen.dart';
 import 'package:starman/features/license/presentation/splash_screen.dart';
 import 'package:starman/features/financial/presentation/profit_loss_screen.dart';
+import 'package:starman/features/purchase/presentation/purchase_item_report_screen.dart';
+import 'package:starman/features/purchase/presentation/purchase_report_screen.dart';
 import 'package:starman/features/sales/presentation/sales_report_screen.dart';
 import 'package:starman/features/sales/presentation/sold_item_report_screen.dart';
 
@@ -19,6 +21,8 @@ class RouteName {
   static String expense = 'expense';
   static String sales = 'sales';
   static String soldItem = 'soldItem';
+  static String purchase = 'purchase';
+  static String purchaseItem = 'purchaseItem';
 }
 
 class RoutePath {
@@ -31,6 +35,8 @@ class RoutePath {
   static String expense = '/expense';
   static String sales = '/sales';
   static String soldItem = '/soldItem';
+  static String purchase = '/purchase';
+  static String purchaseItem = '/purchaseItem';
 }
 
 final appRoute = GoRouter(routes: [
@@ -78,5 +84,15 @@ final appRoute = GoRouter(routes: [
     path: RoutePath.soldItem,
     name: RouteName.soldItem,
     builder: (context, state) => const SoldItemReportScreen(),
+  ),
+  GoRoute(
+    path: RoutePath.purchase,
+    name: RouteName.purchase,
+    builder: (context, state) => const PurchaseReportScreen(),
+  ),
+  GoRoute(
+    path: RoutePath.purchaseItem,
+    name: RouteName.purchaseItem,
+    builder: (context, state) => const PurchaseItemReportScreen(),
   ),
 ], initialLocation: RoutePath.splash);

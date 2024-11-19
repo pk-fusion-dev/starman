@@ -9,7 +9,7 @@ class FusionDatePick extends StatelessWidget {
   String? selectedDate;
 
   @override
-  Widget build(Object context) {
+  Widget build(BuildContext context) {
     selectedDate ??= 'Today';
     // return Container(
     //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -26,7 +26,10 @@ class FusionDatePick extends StatelessWidget {
     //   ),
     // );
     return DropdownButton<String>(
-      dropdownColor: Colors.white,
+      // dropdownColor: Colors.white,
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.secondary,
+      ),
       value: selectedDate,
       items: const [
         DropdownMenuItem(

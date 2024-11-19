@@ -7,22 +7,23 @@ import 'package:starman/components/custom_drawer.dart';
 import 'package:starman/components/fusion_date_picker.dart';
 import 'package:starman/components/loading_indicator.dart';
 import 'package:starman/components/shop_dropdown.dart';
-import 'package:starman/features/sales/models/sales_model.dart';
-import 'package:starman/features/sales/viewmodel/sales_vm.dart';
+import 'package:starman/features/purchase/models/purchase_model.dart';
+import 'package:starman/features/purchase/viewmodel/purchase_vm.dart';
 
-class SalesReportScreen extends ConsumerStatefulWidget {
-  const SalesReportScreen({super.key});
+class PurchaseReportScreen extends ConsumerStatefulWidget {
+  const PurchaseReportScreen({super.key});
 
   @override
-  ConsumerState<SalesReportScreen> createState() => _SalesReportScreenState();
+  ConsumerState<PurchaseReportScreen> createState() =>
+      _PurchaseReportScreenState();
 }
 
-class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
+class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
   String? selectedShop;
   String? selectedDate;
   String user = "All";
   SharedPreferences? prefs;
-  List<StarNsItemList> starNsItemList = [];
+  List<StarNpItemList> starNpItemList = [];
   int totalinv = 0;
   double netTotal = 0;
   double paidTotal = 0;
@@ -32,18 +33,18 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
   void initState() {
     super.initState();
     Future.delayed(Durations.medium1, () async {
-      ref.read(salesVmProvider.notifier).loadData();
+      ref.read(purchaseVmProvider.notifier).loadData();
       prefs = await SharedPreferences.getInstance();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final SalesState salesState = ref.watch(salesVmProvider);
+    final PurchaseState purchaseState = ref.watch(purchaseVmProvider);
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
-    if (salesState.errorMessage != null) {
+    if (purchaseState.errorMessage != null) {
       Fluttertoast.showToast(
           msg: "Operation fails",
           gravity: ToastGravity.CENTER,
@@ -52,7 +53,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "အရောင်းအစီရင်ခံစာ",
+          "အဝယ်အစီရင်ခံစာ",
         ),
         actions: [
           IconButton(
@@ -60,10 +61,10 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               if (selectedShop == null) {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
-                starNsItemList.clear();
+                starNpItemList.clear();
                 selectedDate = "Today";
-                await ref.read(salesVmProvider.notifier).fetchData(
-                    params: {"user_id": selectedShop!, "type": "NS"});
+                await ref.read(purchaseVmProvider.notifier).fetchData(
+                    params: {"user_id": selectedShop!, "type": "NP"});
               }
             },
             icon: Icon(
@@ -76,8 +77,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
       drawer: const CustomDrawer(),
       body: Stack(
         children: [
-          _buildBody(salesState),
-          salesState.isLoading ? const LoadingWidget() : Container(),
+          _buildBody(purchaseState),
+          purchaseState.isLoading ? const LoadingWidget() : Container(),
         ],
       ),
     );
@@ -94,32 +95,31 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     return "0";
   }
 
-  Future<void> dataFilter(List<StarNsItemList> items) async{
+  Future<void> dataFilter(List<StarNpItemList> items) async {
     totalinv = 0;
     netTotal = 0;
     paidTotal = 0;
     if (items.isNotEmpty) {
       for (var item in items) {
-        if(!userList.contains(item.starUserName)){
+        if (!userList.contains(item.starUserName)) {
           userList.add(item.starUserName!);
         }
         if (user == 'All' || item.starUserName == user) {
-          starNsItemList.add(item);
+          starNpItemList.add(item);
           totalinv += 1;
           netTotal += item.starAmount!;
           paidTotal += item.starPaidAmount!;
         }
       }
     }
-    setState(() {
-    });
+    setState(() {});
   }
 
-  Widget _buildBody(SalesState state) {
-    final SalesModel data =
-        state.datas.isNotEmpty ? state.datas[0] : SalesModel();
-    if(data.starNsItemList!=null){
-      dataFilter(data.starNsItemList!);
+  Widget _buildBody(PurchaseState state) {
+    final PurchaseModel data =
+        state.datas.isNotEmpty ? state.datas[0] : PurchaseModel();
+    if (data.starNpItemList != null) {
+      dataFilter(data.starNpItemList!);
     }
     return Container(
       padding: const EdgeInsets.all(10),
@@ -139,10 +139,10 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               ),
               FusionDatePick(
                 selectedDate: selectedDate,
-                onSelected: (value) async{
-                  starNsItemList.clear();
+                onSelected: (value) async {
+                  starNpItemList.clear();
                   ref
-                      .read(salesVmProvider.notifier)
+                      .read(purchaseVmProvider.notifier)
                       .loadDataByFilter(date: value!);
                   setState(() {
                     selectedDate = value;
@@ -204,13 +204,13 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                       ],
                     ),
                   ),
-                  if (data.starNsItemList != null)
+                  if (data.starNpItemList != null)
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: starNsItemList.length,
+                      itemCount: starNpItemList.length,
                       itemBuilder: (context, index) {
-                        var item = starNsItemList[index];
+                        var item = starNpItemList[index];
                         // if (item.starUserName != user) return Container();
                         return listItem(
                           no: index + 1,
@@ -256,15 +256,15 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
           value: "All",
           child: Text("All"),
         ),
-        ...userList.map((user){
-        return DropdownMenuItem(
-        value: user,
-        child: Text(user),
-      );
+        ...userList.map((user) {
+          return DropdownMenuItem(
+            value: user,
+            child: Text(user),
+          );
         })
       ],
       onChanged: (value) {
-        starNsItemList.clear();
+        starNpItemList.clear();
         user = value!;
         setState(() {});
       },
