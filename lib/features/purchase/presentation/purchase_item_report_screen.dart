@@ -52,7 +52,7 @@ class _PurchaseItemReportScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "ကုန်ပစ္စည်းအရောင်းအစီရင်ခံစာ",
+          "ကုန်ပစ္စည်းအဝယ်အစီရင်ခံစာ",
         ),
         actions: [
           IconButton(
@@ -167,9 +167,9 @@ class _PurchaseItemReportScreenState
                     title: const Row(
                       children: [
                         Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3, child: Text("ပြေစာအမှတ်")),
+                        Expanded(flex: 3, child: Text("အမည်")),
+                        Expanded(flex: 3, child: Text("အရေအတွက်")),
                         Expanded(flex: 2, child: Text("ကျသင့်ငွေ")),
-                        Expanded(flex: 1, child: Text("ပေးငွေ")),
                       ],
                     ),
                   ),
@@ -207,8 +207,8 @@ class _PurchaseItemReportScreenState
         children: [
           Expanded(child: Text(no.toString())),
           Expanded(flex: 3, child: Text(name!)),
-          Expanded(flex: 2, child: Text(formatedDecimal(quantity))),
-          Expanded(flex: 1, child: Text(formatedDecimal(amount))),
+          Expanded(flex: 3, child: Text(formatedDecimal(quantity),textAlign: TextAlign.center,)),
+          Expanded(flex: 2, child: Text(formatedDecimal(amount),textAlign: TextAlign.center,)),
         ],
       ),
     );

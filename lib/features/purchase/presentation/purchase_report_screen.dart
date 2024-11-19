@@ -238,7 +238,7 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
         children: [
           Expanded(child: Text(no.toString())),
           Expanded(flex: 3, child: Text(inv!)),
-          Expanded(flex: 3, child: Text(formatedDecimal(pamount))),
+          Expanded(flex: 3, child: Text(formatedDecimal(namount))),
           Expanded(flex: 2, child: Text(formatedDecimal(pamount))),
         ],
       ),

@@ -121,7 +121,6 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
               FusionDatePick(
                 selectedDate: selectedDate,
                 onSelected: (value) {
-                  starItemList.clear();
                   ref
                       .read(soldItemVmProvider.notifier)
                       .loadDataByFilter(date: value!);
@@ -165,9 +164,9 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
                     title: const Row(
                       children: [
                         Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3, child: Text("ပြေစာအမှတ်")),
+                        Expanded(flex: 3, child: Text("အမည်")),
+                        Expanded(flex: 2, child: Text("အရေအတွက်")),
                         Expanded(flex: 2, child: Text("ကျသင့်ငွေ")),
-                        Expanded(flex: 1, child: Text("ပေးငွေ")),
                       ],
                     ),
                   ),
@@ -206,7 +205,7 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
           Expanded(child: Text(no.toString())),
           Expanded(flex: 3, child: Text(name!)),
           Expanded(flex: 2, child: Text(formatedDecimal(quantity))),
-          Expanded(flex: 1, child: Text(formatedDecimal(amount))),
+          Expanded(flex: 2, child: Text(formatedDecimal(amount))),
         ],
       ),
     );

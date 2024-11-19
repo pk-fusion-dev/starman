@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
@@ -22,11 +23,10 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
   String? selectedDate;
   String user = "All";
   SharedPreferences? prefs;
-  List<StarNsItemList> starNsItemList = [];
-  int totalinv = 0;
-  double netTotal = 0;
-  double paidTotal = 0;
-  List<String> userList = [];
+  int maxCount = 20;
+  final refreshController = RefreshController();
+  List<StarNsItemList> allData = [];
+  List<StarNsItemList> showData = [];
 
   @override
   void initState() {
@@ -40,6 +40,15 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
   @override
   Widget build(BuildContext context) {
     final SalesState salesState = ref.watch(salesVmProvider);
+    allData = salesState.vouchers;
+    print("build again");
+    if(allData.isNotEmpty){
+      showData.clear();
+      maxCount = allData.length < maxCount ? allData.length : maxCount;
+      for (int i = 0; i < maxCount; i++) {
+        showData.add(allData[i]);
+      }
+    }
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
@@ -60,8 +69,10 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               if (selectedShop == null) {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
-                starNsItemList.clear();
+                maxCount = 10;
                 selectedDate = "Today";
+                user = "All";
+                refreshController.loadFailed();
                 await ref.read(salesVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "NS"});
               }
@@ -94,33 +105,10 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     return "0";
   }
 
-  Future<void> dataFilter(List<StarNsItemList> items) async{
-    totalinv = 0;
-    netTotal = 0;
-    paidTotal = 0;
-    if (items.isNotEmpty) {
-      for (var item in items) {
-        if(!userList.contains(item.starUserName)){
-          userList.add(item.starUserName!);
-        }
-        if (user == 'All' || item.starUserName == user) {
-          starNsItemList.add(item);
-          totalinv += 1;
-          netTotal += item.starAmount!;
-          paidTotal += item.starPaidAmount!;
-        }
-      }
-    }
-    setState(() {
-    });
-  }
-
   Widget _buildBody(SalesState state) {
     final SalesModel data =
         state.datas.isNotEmpty ? state.datas[0] : SalesModel();
-    if(data.starNsItemList!=null){
-      dataFilter(data.starNsItemList!);
-    }
+    //
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -140,7 +128,9 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               FusionDatePick(
                 selectedDate: selectedDate,
                 onSelected: (value) async{
-                  starNsItemList.clear();
+                  // allData.clear();
+                  maxCount=10;
+                  refreshController.loadFailed();
                   ref
                       .read(salesVmProvider.notifier)
                       .loadDataByFilter(date: value!);
@@ -153,7 +143,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
           ),
           Row(
             children: [
-              userDropdown(),
+              userDropdown(state),
             ],
           ),
           Expanded(
@@ -166,7 +156,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                       children: [
                         const Text("ပြေစာအရေအတွက်"),
                         Text(
-                          totalinv.toString(),
+                          state.vouchers.length.toString(),
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
@@ -175,7 +165,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                       children: [
                         const Text("ကျသင့်ငွေပေါင်း"),
                         Text(
-                          "$netTotal ${data.starCurrency}",
+                          "${state.totalAmount} ${data.starCurrency}",
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
@@ -184,7 +174,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                       children: [
                         const Text("ပေးငွေပေါင်း"),
                         Text(
-                          "$paidTotal ${data.starCurrency}",
+                          "${state.totalPaidAmount} ${data.starCurrency}",
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
@@ -204,21 +194,65 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                       ],
                     ),
                   ),
-                  if (data.starNsItemList != null)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: starNsItemList.length,
-                      itemBuilder: (context, index) {
-                        var item = starNsItemList[index];
-                        // if (item.starUserName != user) return Container();
-                        return listItem(
-                          no: index + 1,
-                          inv: item.starInvovice,
-                          namount: item.starAmount,
-                          pamount: item.starPaidAmount,
-                        );
-                      },
+                  if (state.vouchers.isNotEmpty)
+                    SingleChildScrollView(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: SmartRefresher(
+                          controller: refreshController,
+                          enablePullUp: true,
+                          enablePullDown: false,
+                          footer: CustomFooter(
+                              builder: (context, LoadStatus? mode) {
+                                Widget body = Container();
+                                if (mode == LoadStatus.loading) {
+                                  body = const CircularProgressIndicator();
+                                } else if (mode == LoadStatus.noMore) {
+                                  body = const Text("No More Data...");
+                                }
+                                return SizedBox(
+                                  height: 55,
+                                  child: Center(
+                                    child: body,
+                                  ),
+                                );
+                              }),
+                          onLoading: () {
+                            if (maxCount == allData.length) {
+                              refreshController.loadNoData();
+                            } else {
+                              Future.delayed(
+                                  const Duration(microseconds: 1000), () {
+                                int rmData = allData.length - maxCount;
+                                int nextCount = rmData >= 10 ? 10 : rmData;
+                                for (int i = maxCount;
+                                i < maxCount + nextCount;
+                                i++) {
+                                  showData.add(allData[i]);
+                                }
+                                maxCount += nextCount;
+                                setState(() {});
+                              });
+                              refreshController.loadComplete();
+                            }
+                          },
+                          child: ListView.builder(
+                            // shrinkWrap: true,
+                            // physics: const NeverScrollableScrollPhysics(),
+                            itemCount: maxCount,
+                            itemBuilder: (context, index) {
+                              var item = showData[index];
+                              // if (item.starUserName != user) return Container();
+                              return listItem(
+                                no: index + 1,
+                                inv: item.starInvovice,
+                                namount: item.starAmount,
+                                pamount: item.starPaidAmount,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     )
                 ],
               ),
@@ -238,14 +272,14 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
         children: [
           Expanded(child: Text(no.toString())),
           Expanded(flex: 3, child: Text(inv!)),
-          Expanded(flex: 3, child: Text(formatedDecimal(pamount))),
+          Expanded(flex: 3, child: Text(formatedDecimal(namount))),
           Expanded(flex: 2, child: Text(formatedDecimal(pamount))),
         ],
       ),
     );
   }
 
-  Widget userDropdown() {
+  Widget userDropdown(SalesState state) {
     return DropdownButton<String>(
       style: TextStyle(
         color: Theme.of(context).colorScheme.secondary,
@@ -256,7 +290,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
           value: "All",
           child: Text("All"),
         ),
-        ...userList.map((user){
+        ...state.users.map((user){
         return DropdownMenuItem(
         value: user,
         child: Text(user),
@@ -264,9 +298,13 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
         })
       ],
       onChanged: (value) {
-        starNsItemList.clear();
+        maxCount=10;
+        refreshController.loadFailed();
         user = value!;
         setState(() {});
+        ref
+            .read(salesVmProvider.notifier)
+            .filterVoucherByUser(user: value);
       },
       hint: const Text('Users'),
     );
