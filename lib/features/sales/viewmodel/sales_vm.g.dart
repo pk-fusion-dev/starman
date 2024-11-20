@@ -6,7 +6,7 @@ part of 'sales_vm.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$salesVmHash() => r'5131eed1bb44b64106d60f1b12716b9bf6e0a9ac';
+String _$salesVmHash() => r'c81913109bc9542fc05860d9ebda9c3519dbaac2';
 
 /// See also [SalesVm].
 @ProviderFor(SalesVm)

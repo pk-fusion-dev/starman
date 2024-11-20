@@ -10,6 +10,8 @@ import 'package:starman/features/purchase/presentation/purchase_item_report_scre
 import 'package:starman/features/purchase/presentation/purchase_report_screen.dart';
 import 'package:starman/features/sales/presentation/sales_report_screen.dart';
 import 'package:starman/features/sales/presentation/sold_item_report_screen.dart';
+import 'package:starman/features/stock/presentation/stock_balance_screen.dart';
+import 'package:starman/features/stock/presentation/stock_reorder_screen.dart';
 
 class RouteName {
   static String splash = 'splash';
@@ -23,6 +25,8 @@ class RouteName {
   static String soldItem = 'soldItem';
   static String purchase = 'purchase';
   static String purchaseItem = 'purchaseItem';
+  static String stockBalance = 'stockBalance';
+  static String stockReorder = 'stockReorder';
 }
 
 class RoutePath {
@@ -37,6 +41,8 @@ class RoutePath {
   static String soldItem = '/soldItem';
   static String purchase = '/purchase';
   static String purchaseItem = '/purchaseItem';
+  static String stockBalance = '/stockBalance';
+  static String stockReorder = '/stockReorder';
 }
 
 final appRoute = GoRouter(routes: [
@@ -94,5 +100,15 @@ final appRoute = GoRouter(routes: [
     path: RoutePath.purchaseItem,
     name: RouteName.purchaseItem,
     builder: (context, state) => const PurchaseItemReportScreen(),
+  ),
+  GoRoute(
+    path: RoutePath.stockBalance,
+    name: RouteName.stockBalance,
+    builder: (context, state) => const StockBalanceScreen(),
+  ),
+  GoRoute(
+    path: RoutePath.stockReorder,
+    name: RouteName.stockReorder,
+    builder: (context, state) => const StockReorderScreen(),
   ),
 ], initialLocation: RoutePath.splash);

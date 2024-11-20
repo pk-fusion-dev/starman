@@ -65,9 +65,29 @@ class ZipManager {
       String jsonData = await file.readAsString();
       // Decode the JSON
       List<dynamic> parsedJson = jsonDecode(jsonData);
-      // log(parsedJson.toString());
       // Assuming each item in the list is a map and filtering by selectedDateFilter
       var datas = parsedJson.map((data) => fromJson(data)).toList();
+      // print(datas);
+      return datas;
+    } catch (e) {
+      log('Error parsing JSON data: $e');
+    }
+  }
+
+  static Future<dynamic> loadDataStockBalance(
+      String fileName, Function fromJson) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = directory.path;
+      final finalFileName = '$filePath/$fileName';
+      final file = File(finalFileName);
+      // Read the file
+      String jsonData = await file.readAsString();
+      // Decode the JSON
+      List<dynamic> parsedJson = [jsonDecode(jsonData)];
+      // Assuming each item in the list is a map and filtering by selectedDateFilter
+      var datas = parsedJson.map((data) => fromJson(data)).toList();
+      // print(datas);
       return datas;
     } catch (e) {
       log('Error parsing JSON data: $e');

@@ -19,7 +19,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   ExpansionTileController finanacialTile = ExpansionTileController();
   ExpansionTileController salesTile = ExpansionTileController();
   ExpansionTileController purchaseTile = ExpansionTileController();
-  ExpansionTileController inventoryTile = ExpansionTileController();
+  ExpansionTileController stockTile = ExpansionTileController();
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     DateTime endDate = dateFormat.parse(endDateString);
     int remainingDays = endDate.difference(currentDate).inDays;
     setState(() {
-      inventoryTile.expand();
+      stockTile.expand();
       rmDay = remainingDays.toString();
       finalEndDate = endDateString;
       starID = prefs.getString("starID")!;
@@ -171,23 +171,23 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text("Inventory Report"),
-                  controller: inventoryTile,
+                  title: const Text("Stock Report"),
+                  controller: stockTile,
                   children: [
                     listItem(
                       context,
                       const Icon(Icons.add_shopping_cart),
                       "ကုန်ပစ္စည်းလက်ကျန်",
-                          () {
-                        // context.goNamed(RouteName.purchase);
+                      () {
+                        context.goNamed(RouteName.stockBalance);
                       },
                     ),
                     listItem(
                       context,
                       const Icon(Icons.add_shopping_cart),
                       "အရေအတွက်နည်းနေသောကုန်ပစ္စည်း",
-                          () {
-                        // context.goNamed(RouteName.purchaseItem);
+                      () {
+                        context.goNamed(RouteName.stockReorder);
                       },
                     ),
                   ],

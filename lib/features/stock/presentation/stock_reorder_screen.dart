@@ -5,54 +5,53 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
-import 'package:starman/components/fusion_date_picker.dart';
 import 'package:starman/components/loading_indicator.dart';
 import 'package:starman/components/shop_dropdown.dart';
-import 'package:starman/features/sales/models/sales_model.dart';
-import 'package:starman/features/sales/viewmodel/sales_vm.dart';
+import 'package:starman/features/stock/models/stock_reorder_model.dart';
+import 'package:starman/features/stock/view_model/stock_reorder_vm.dart';
 
-class SalesReportScreen extends ConsumerStatefulWidget {
-  const SalesReportScreen({super.key});
+class StockReorderScreen extends ConsumerStatefulWidget {
+  const StockReorderScreen({super.key});
 
   @override
-  ConsumerState<SalesReportScreen> createState() => _SalesReportScreenState();
+  ConsumerState<StockReorderScreen> createState() => _StockReorderScreenState();
 }
 
-class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
+class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
   String? selectedShop;
   String? selectedDate;
-  String user = "All";
   SharedPreferences? prefs;
-  int maxCount = 20;
+  String? category = "All";
   final refreshController = RefreshController();
-  List<StarNsItemList> allData = [];
-  List<StarNsItemList> showData = [];
+  int maxCount = 20;
+  List<StockReorderModel> allStock = [];
+  List<StockReorderModel> showStock = [];
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Durations.medium1, () async {
-      ref.read(salesVmProvider.notifier).loadData();
+      ref.read(stockReorderVmProvider.notifier).loadData();
       prefs = await SharedPreferences.getInstance();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final SalesState salesState = ref.watch(salesVmProvider);
-    allData = salesState.vouchers;
-    // print("build again");
-    if (allData.isNotEmpty) {
-      showData.clear();
-      maxCount = allData.length < maxCount ? allData.length : maxCount;
+    final StockReorderState stockReorderState =
+        ref.watch(stockReorderVmProvider);
+    allStock = stockReorderState.datas;
+    if (allStock.isNotEmpty) {
+      showStock.clear();
+      maxCount = allStock.length < maxCount ? allStock.length : maxCount;
       for (int i = 0; i < maxCount; i++) {
-        showData.add(allData[i]);
+        showStock.add(allStock[i]);
       }
     }
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
-    if (salesState.errorMessage != null) {
+    if (stockReorderState.errorMessage != null) {
       Fluttertoast.showToast(
           msg: "Operation fails",
           gravity: ToastGravity.CENTER,
@@ -61,7 +60,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "အရောင်းအစီရင်ခံစာ",
+          "အရေအတွက်နည်းနေသောကုန်ပစ္စည်း",
         ),
         actions: [
           IconButton(
@@ -69,12 +68,9 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
               if (selectedShop == null) {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
-                maxCount = 10;
                 selectedDate = "Today";
-                user = "All";
-                refreshController.loadFailed();
-                await ref.read(salesVmProvider.notifier).fetchData(
-                    params: {"user_id": selectedShop!, "type": "NS"});
+                await ref.read(stockReorderVmProvider.notifier).fetchData(
+                    params: {"user_id": selectedShop!, "type": "RS"});
               }
             },
             icon: Icon(
@@ -87,8 +83,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
       drawer: const CustomDrawer(),
       body: Stack(
         children: [
-          _buildBody(salesState),
-          salesState.isLoading ? const LoadingWidget() : Container(),
+          _buildBody(stockReorderState),
+          stockReorderState.isLoading ? const LoadingWidget() : Container(),
         ],
       ),
     );
@@ -105,79 +101,43 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     return "0";
   }
 
-  Widget _buildBody(SalesState state) {
-    final SalesModel data =
-        state.datas.isNotEmpty ? state.datas[0] : SalesModel();
-    //
+  Widget _buildBody(StockReorderState state) {
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
             children: [
-              ShopDropdown(
-                selectedItem: selectedShop,
-                onSelected: (value) {
-                  setState(() {
-                    selectedShop = value;
-                    prefs?.setString("lastShop", value!);
-                  });
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ShopDropdown(
+                    selectedItem: selectedShop,
+                    onSelected: (value) {
+                      setState(() {
+                        selectedShop = value;
+                        prefs?.setString("lastShop", value!);
+                      });
+                    },
+                  ),
+                ],
               ),
-              FusionDatePick(
-                selectedDate: selectedDate,
-                onSelected: (value) async {
-                  // allData.clear();
-                  maxCount = 10;
-                  refreshController.loadFailed();
-                  ref
-                      .read(salesVmProvider.notifier)
-                      .loadDataByFilter(date: value!);
-                  setState(() {
-                    selectedDate = value;
-                  });
-                },
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              userDropdown(state),
+              Row(
+                children: [
+                  catDropdown(state),
+                ],
+              )
             ],
           ),
           Expanded(
             child: SingleChildScrollView(
               child: CustomCard(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                title: Column(
                   children: [
-                    Column(
-                      children: [
-                        const Text("ပြေစာအရေအတွက်"),
-                        Text(
-                          state.vouchers.length.toString(),
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text("ကျသင့်ငွေပေါင်း"),
-                        Text(
-                          "${state.totalAmount} ${data.starCurrency}",
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text("ပေးငွေပေါင်း"),
-                        Text(
-                          "${state.totalPaidAmount} ${data.starCurrency}",
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
+                    const Text("အော်ဒါမှာရမည့်ကုန်ပစ္စည်းအရေအတွက်"),
+                    Text(
+                      formatedDecimal(state.datas.length),
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],
                 ),
@@ -188,20 +148,20 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                     title: const Row(
                       children: [
                         Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3, child: Text("ပြေစာအမှတ်")),
-                        Expanded(flex: 3, child: Text("ကျသင့်ငွေ")),
-                        Expanded(flex: 2, child: Text("ပေးငွေ")),
+                        Expanded(flex: 3, child: Text("အမည်")),
+                        Expanded(flex: 2, child: Text("ဂိုထောင်လက်ကျန်")),
+                        Expanded(flex: 2, child: Text("အနည်းဆုံးလက်ကျန်")),
                       ],
                     ),
                   ),
-                  if (state.vouchers.isNotEmpty)
+                  if (state.datas.isNotEmpty)
                     SingleChildScrollView(
                       child: SizedBox(
                         height: MediaQuery.of(context).size.height * 0.6,
                         child: SmartRefresher(
                           controller: refreshController,
-                          enablePullUp: true,
                           enablePullDown: false,
+                          enablePullUp: true,
                           footer: CustomFooter(
                               builder: (context, LoadStatus? mode) {
                             Widget body = Container();
@@ -218,17 +178,17 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                             );
                           }),
                           onLoading: () {
-                            if (maxCount == allData.length) {
+                            if (maxCount == allStock.length) {
                               refreshController.loadNoData();
                             } else {
                               Future.delayed(const Duration(microseconds: 1000),
                                   () {
-                                int rmData = allData.length - maxCount;
+                                int rmData = allStock.length - maxCount;
                                 int nextCount = rmData >= 10 ? 10 : rmData;
                                 for (int i = maxCount;
                                     i < maxCount + nextCount;
                                     i++) {
-                                  showData.add(allData[i]);
+                                  showStock.add(allStock[i]);
                                 }
                                 maxCount += nextCount;
                                 setState(() {});
@@ -239,15 +199,15 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                           child: ListView.builder(
                             // shrinkWrap: true,
                             // physics: const NeverScrollableScrollPhysics(),
-                            itemCount: maxCount,
+                            itemCount: showStock.length,
                             itemBuilder: (context, index) {
-                              var item = showData[index];
+                              var item = showStock[index];
                               // if (item.starUserName != user) return Container();
                               return listItem(
                                 no: index + 1,
-                                inv: item.starInvovice,
-                                namount: item.starAmount,
-                                pamount: item.starPaidAmount,
+                                name: item.starItemName,
+                                whQty: item.starInventoryQty,
+                                reorderQty: item.starReorderQty,
                               );
                             },
                           ),
@@ -263,7 +223,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     );
   }
 
-  Widget listItem({int? no, String? inv, double? namount, double? pamount}) {
+  Widget listItem({int? no, String? name, double? whQty, double? reorderQty}) {
     return ListTile(
       titleTextStyle: Theme.of(context).textTheme.bodySmall,
       textColor: Theme.of(context).colorScheme.secondary,
@@ -271,40 +231,52 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(child: Text(no.toString())),
-          Expanded(flex: 3, child: Text(inv!)),
-          Expanded(flex: 3, child: Text(formatedDecimal(namount))),
-          Expanded(flex: 2, child: Text(formatedDecimal(pamount))),
+          Expanded(flex: 3, child: Text(name!)),
+          Expanded(
+              flex: 2,
+              child: Text(
+                formatedDecimal(whQty),
+                textAlign: TextAlign.center,
+              )),
+          Expanded(
+              flex: 2,
+              child: Text(
+                formatedDecimal(reorderQty),
+                textAlign: TextAlign.center,
+              )),
         ],
       ),
     );
   }
 
-  Widget userDropdown(SalesState state) {
+  Widget catDropdown(StockReorderState state) {
     return DropdownButton<String>(
       style: TextStyle(
         color: Theme.of(context).colorScheme.secondary,
       ),
-      value: user,
+      value: category,
       items: [
         const DropdownMenuItem(
           value: "All",
           child: Text("All"),
         ),
-        ...state.users.map((user) {
+        ...state.categories.map((category) {
           return DropdownMenuItem(
-            value: user,
-            child: Text(user),
+            value: category,
+            child: Text(category),
           );
         })
       ],
       onChanged: (value) {
         maxCount = 10;
         refreshController.loadFailed();
-        user = value!;
+        category = value!;
         setState(() {});
-        ref.read(salesVmProvider.notifier).filterVoucherByUser(user: value);
+        ref
+            .read(stockReorderVmProvider.notifier)
+            .loadDataByFilter(category: value);
       },
-      hint: const Text('Users'),
+      hint: const Text('Category'),
     );
   }
 }
