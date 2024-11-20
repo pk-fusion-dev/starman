@@ -20,6 +20,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   ExpansionTileController salesTile = ExpansionTileController();
   ExpansionTileController purchaseTile = ExpansionTileController();
   ExpansionTileController stockTile = ExpansionTileController();
+  ExpansionTileController ostTile = ExpansionTileController();
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     DateTime endDate = dateFormat.parse(endDateString);
     int remainingDays = endDate.difference(currentDate).inDays;
     setState(() {
-      stockTile.expand();
+      ostTile.expand();
       rmDay = remainingDays.toString();
       finalEndDate = endDateString;
       starID = prefs.getString("starID")!;
@@ -89,7 +90,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             child: ListView(
               children: [
                 ExpansionTile(
-                  title: const Text("Financial Report"),
+                  title: const Text("ငွေစာရင်းအစီရင်ခံစာ"),
                   controller: finanacialTile,
                   children: [
                     listItem(
@@ -127,7 +128,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text("Sales Report"),
+                  title: const Text("အရောင်းအစီရင်ခံစာ"),
                   controller: salesTile,
                   children: [
                     listItem(
@@ -149,7 +150,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text("Purchase Report"),
+                  title: const Text("အဝယ်အစီရင်ခံစာ"),
                   controller: purchaseTile,
                   children: [
                     listItem(
@@ -171,7 +172,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text("Stock Report"),
+                  title: const Text("ကုန်ပစ္စည်းအစီရင်ခံစာ"),
                   controller: stockTile,
                   children: [
                     listItem(
@@ -188,6 +189,28 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       "အရေအတွက်နည်းနေသောကုန်ပစ္စည်း",
                       () {
                         context.goNamed(RouteName.stockReorder);
+                      },
+                    ),
+                  ],
+                ),
+                ExpansionTile(
+                  title: const Text("အကြွေးအစီရင်ခံစာ"),
+                  controller: ostTile,
+                  children: [
+                    listItem(
+                      context,
+                      const Icon(Icons.add_shopping_cart),
+                      "ရရန်ရှိအစီရင်ခံစာ",
+                      () {
+                        context.goNamed(RouteName.outstandingCustomer);
+                      },
+                    ),
+                    listItem(
+                      context,
+                      const Icon(Icons.add_shopping_cart),
+                      "ပေးရန်ရှိအစီရင်ခံစာ",
+                      () {
+                        context.goNamed(RouteName.outstandingSupplier);
                       },
                     ),
                   ],

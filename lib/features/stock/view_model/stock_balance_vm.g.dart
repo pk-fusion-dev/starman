@@ -6,7 +6,7 @@ part of 'stock_balance_vm.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$stockBalanceVmHash() => r'dad037a39e34fe6f701eb6507c173ebb50f85564';
+String _$stockBalanceVmHash() => r'58e28b7915d0838f9f627c2b4f9c6f97ae71b200';
 
 /// See also [StockBalanceVm].
 @ProviderFor(StockBalanceVm)

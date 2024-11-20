@@ -6,6 +6,8 @@ import 'package:starman/features/license/presentation/license_expire_screen.dart
 import 'package:starman/features/license/presentation/register_starid_screen.dart';
 import 'package:starman/features/license/presentation/splash_screen.dart';
 import 'package:starman/features/financial/presentation/profit_loss_screen.dart';
+import 'package:starman/features/outstanding/presentation/outstanding_customer_screen.dart';
+import 'package:starman/features/outstanding/presentation/outstanding_supplier_screen.dart';
 import 'package:starman/features/purchase/presentation/purchase_item_report_screen.dart';
 import 'package:starman/features/purchase/presentation/purchase_report_screen.dart';
 import 'package:starman/features/sales/presentation/sales_report_screen.dart';
@@ -27,6 +29,8 @@ class RouteName {
   static String purchaseItem = 'purchaseItem';
   static String stockBalance = 'stockBalance';
   static String stockReorder = 'stockReorder';
+  static String outstandingCustomer = 'outstandingCustomer';
+  static String outstandingSupplier = 'outstandingSupplier';
 }
 
 class RoutePath {
@@ -43,6 +47,8 @@ class RoutePath {
   static String purchaseItem = '/purchaseItem';
   static String stockBalance = '/stockBalance';
   static String stockReorder = '/stockReorder';
+  static String outstandingCustomer = '/outstandingCustomer';
+  static String outstandingSupplier = '/outstandingSupplier';
 }
 
 final appRoute = GoRouter(routes: [
@@ -110,5 +116,15 @@ final appRoute = GoRouter(routes: [
     path: RoutePath.stockReorder,
     name: RouteName.stockReorder,
     builder: (context, state) => const StockReorderScreen(),
+  ),
+  GoRoute(
+    path: RoutePath.outstandingCustomer,
+    name: RouteName.outstandingCustomer,
+    builder: (context, state) => const OutstandingCustomerScreen(),
+  ),
+  GoRoute(
+    path: RoutePath.outstandingSupplier,
+    name: RouteName.outstandingSupplier,
+    builder: (context, state) => const OutstandingSupplierScreen(),
   ),
 ], initialLocation: RoutePath.splash);
