@@ -36,7 +36,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     DateTime endDate = dateFormat.parse(endDateString);
     int remainingDays = endDate.difference(currentDate).inDays;
     setState(() {
-      ostTile.expand();
+      // ostTile.expand();
       rmDay = remainingDays.toString();
       finalEndDate = endDateString;
       starID = prefs.getString("starID")!;

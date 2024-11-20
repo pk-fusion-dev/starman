@@ -96,6 +96,7 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
     String totalIn = formatedDecimal(data.starTotalIncome);
     String totalExp = formatedDecimal(data.starTotalExpense);
     String totalBalance = formatedDecimal(data.starTotalBalance);
+    String currency = data.starCurrency ?? '';
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -126,62 +127,69 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
             ],
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: CustomCard(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        const Text("စုစုပေါင်းဝင်ငွေ"),
-                        Text(totalIn),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text("စုစုပေါင်းထွက်ငွေ"),
-                        Text(totalExp),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text("စုစုပေါင်းကျန်ငွေ"),
-                        Text(totalBalance),
-                      ],
-                    ),
-                  ],
-                ),
+            child: CustomCard(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ListTile(
-                    titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    title: const Row(
+                  Column(
+                    children: [
+                      const Text("စုစုပေါင်းဝင်ငွေ"),
+                      Text("$totalIn $currency"),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      const Text("စုစုပေါင်းထွက်ငွေ"),
+                      Text("$totalExp $currency"),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      const Text("စုစုပေါင်းကျန်ငွေ"),
+                      Text("$totalBalance $currency"),
+                    ],
+                  ),
+                ],
+              ),
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: SingleChildScrollView(
+                    child: Column(
                       children: [
-                        Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3,child: Text("နေ့စွဲ")),
-                        Expanded(flex: 2,child: Text("ဝင်ငွေ")),
-                        Expanded(flex: 2,child: Text("ထွက်ငွေ")),
-                        Expanded(flex: 2,child: Text("ကျန်ငွေ")),
+                        ListTile(
+                          titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                          title: const Row(
+                            children: [
+                              Expanded(child: Text("စဉ်")),
+                              Expanded(flex: 3,child: Text("နေ့စွဲ")),
+                              Expanded(flex: 2,child: Text("ဝင်ငွေ")),
+                              Expanded(flex: 2,child: Text("ထွက်ငွေ")),
+                              Expanded(flex: 2,child: Text("ကျန်ငွေ")),
+                            ],
+                          ),
+                        ),
+                        if(data.starCFByDateDetailList != null)
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: data.starCFByDateDetailList!.length,
+                            itemBuilder: (context,index){
+                              var item = data.starCFByDateDetailList![index];
+                              return listItem(
+                                no: index,
+                                date: item.starDate,
+                                income: item.starIncome,
+                                expense: item.starExpense,
+                                balance: item.starBalance,
+                              );
+                            },
+                          )
                       ],
                     ),
                   ),
-                  if(data.starCFByDateDetailList != null)
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: data.starCFByDateDetailList!.length,
-                    itemBuilder: (context,index){
-                      var item = data.starCFByDateDetailList![index];
-                      return listItem(
-                        no: index,
-                        date: item.starDate,
-                        income: item.starIncome,
-                        expense: item.starExpense,
-                        balance: item.starBalance,
-                      );
-                    },
-                  )
-                ],
-              ),
+                )
+              ],
             ),
           ),
         ],

@@ -83,6 +83,7 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
     String totalIn = '0';
     String totalOut = '0';
     String total = '0';
+    String currency = data.starCurrency ?? '';
     if (data.starTotalCashIn != null) {
       totalIn = data.starTotalCashIn!.toStringAsFixed(3);
       totalIn = totalIn.contains('.')
@@ -130,57 +131,64 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
             ],
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: CustomCard(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        const Text("စုစုပေါင်းငွေအဝင်"),
-                        Text(totalIn)
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text("စုစုပေါင်းငွေအထွက်"),
-                        Text(totalOut),
-                      ],
-                    ),
-                  ],
-                ),
+            child: CustomCard(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ExpansionTile(
-                    title: Text(
-                      "ငွေအဝင်",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
+                  Column(
                     children: [
-                      listItem("ရောင်းရငွေ", data.starSalesAmount ?? 0),
-                      listItem("အခြားဝင်ငွေ", data.starOtherIncome ?? 0),
-                      listItem("ကုန်ဝယ်သူမှပေးချေငွေ",
-                          data.starCustomerPayment ?? 0),
-                      listItem("စုစုပေါင်းငွေအဝင်", data.starTotalCashIn ?? 0),
+                      const Text("စုစုပေါင်းငွေအဝင်"),
+                      Text("$totalIn $currency")
                     ],
                   ),
-                  ExpansionTile(
-                    title: Text(
-                      "ငွေအထွက်",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
+                  Column(
                     children: [
-                      listItem("ကုန်ဝယ်ငွေ", data.starPurchaseAmount ?? 0),
-                      listItem("အခြားအသုံးစရိတ်", data.starOtherExpense ?? 0),
-                      listItem("ကုန်ရောင်းသူအားပေးချေငွေ",
-                          data.starSupplierPayment ?? 0),
-                      listItem("ပိုင်ရှင်ထံအပ်ငွေ", data.starDepositOwner ?? 0,
-                          isOut: true),
-                      listItem(
-                          "စုစုပေါင်းငွေအထွက်", data.starTotalCashOut ?? 0),
+                      const Text("စုစုပေါင်းငွေအထွက်"),
+                      Text("$totalOut $currency"),
                     ],
                   ),
                 ],
               ),
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ExpansionTile(
+                          title: Text(
+                            "ငွေအဝင်",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          children: [
+                            listItem("ရောင်းရငွေ", data.starSalesAmount ?? 0),
+                            listItem("အခြားဝင်ငွေ", data.starOtherIncome ?? 0),
+                            listItem("ကုန်ဝယ်သူမှပေးချေငွေ",
+                                data.starCustomerPayment ?? 0),
+                            listItem("စုစုပေါင်းငွေအဝင်", data.starTotalCashIn ?? 0),
+                          ],
+                        ),
+                        ExpansionTile(
+                          title: Text(
+                            "ငွေအထွက်",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          children: [
+                            listItem("ကုန်ဝယ်ငွေ", data.starPurchaseAmount ?? 0),
+                            listItem("အခြားအသုံးစရိတ်", data.starOtherExpense ?? 0),
+                            listItem("ကုန်ရောင်းသူအားပေးချေငွေ",
+                                data.starSupplierPayment ?? 0),
+                            listItem("ပိုင်ရှင်ထံအပ်ငွေ", data.starDepositOwner ?? 0,
+                                isOut: true),
+                            listItem(
+                                "စုစုပေါင်းငွေအထွက်", data.starTotalCashOut ?? 0),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
           Container(
@@ -190,10 +198,10 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
               color: Theme.of(context).colorScheme.primary,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 const Text("Total"),
-                Text("$total ${data.starCurrency}"),
+                Text("$total ${data.starCurrency ?? ''}"),
               ],
             ),
           ),

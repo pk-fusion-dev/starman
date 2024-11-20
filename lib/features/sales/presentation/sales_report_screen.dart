@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
 import 'package:starman/components/fusion_date_picker.dart';
+import 'package:starman/components/ios_loading_indication.dart';
 import 'package:starman/components/loading_indicator.dart';
 import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/sales/models/sales_model.dart';
@@ -109,6 +110,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     final SalesModel data =
         state.datas.isNotEmpty ? state.datas[0] : SalesModel();
     //
+    String currency = data.starCurrency ?? '';
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -165,7 +167,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                       children: [
                         const Text("ကျသင့်ငွေပေါင်း"),
                         Text(
-                          "${state.totalAmount} ${data.starCurrency}",
+                          "${state.totalAmount} $currency",
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
@@ -174,7 +176,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                       children: [
                         const Text("ပေးငွေပေါင်း"),
                         Text(
-                          "${state.totalPaidAmount} ${data.starCurrency}",
+                          "${state.totalPaidAmount} $currency",
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
@@ -206,7 +208,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                               builder: (context, LoadStatus? mode) {
                             Widget body = Container();
                             if (mode == LoadStatus.loading) {
-                              body = const CircularProgressIndicator();
+                              body = const IosLoadingIndication();
                             } else if (mode == LoadStatus.noMore) {
                               body = const Text("No More Data...");
                             }

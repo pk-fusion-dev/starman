@@ -5,6 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
+import 'package:starman/components/ios_loading_indication.dart';
 import 'package:starman/components/loading_indicator.dart';
 import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/stock/models/stock_balance_model.dart';
@@ -67,6 +68,8 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
               if (selectedShop == null) {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
+                maxCount = 20;
+                refreshController.loadFailed();
                 await ref.read(stockBalanceVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "SB"});
               }
@@ -164,7 +167,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
                     title: const Row(
                       children: [
                         Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3, child: Text("အမည်")),
+                        Expanded(flex: 3, child: Text("အမည်/ကုန်အုပ်စု")),
                         Expanded(flex: 2, child: Text("အရေအတွက်")),
                         Expanded(flex: 1, child: Text("ယူနစ်")),
                       ],
@@ -182,7 +185,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
                               builder: (context, LoadStatus? mode) {
                             Widget body = Container();
                             if (mode == LoadStatus.loading) {
-                              body = const CircularProgressIndicator();
+                              body = const IosLoadingIndication();
                             } else if (mode == LoadStatus.noMore) {
                               body = const Text("No More Data...");
                             }
@@ -221,9 +224,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
                               // if (item.starUserName != user) return Container();
                               return listItem(
                                 no: index + 1,
-                                name: item.starItemName,
-                                qty: item.starQty,
-                                unit: item.starUnit,
+                                item: item,
                               );
                             },
                           ),
@@ -239,7 +240,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
     );
   }
 
-  Widget listItem({int? no, String? name, double? qty, String? unit}) {
+  Widget listItem({required int no,required StarStockBalanceList item}) {
     return ListTile(
       titleTextStyle: Theme.of(context).textTheme.bodySmall,
       textColor: Theme.of(context).colorScheme.secondary,
@@ -247,17 +248,23 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(child: Text(no.toString())),
-          Expanded(flex: 3, child: Text(name!)),
+          Expanded(flex: 3, child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(item.starItemName),
+              Text(item.starCategoryName),
+            ],
+          )),
           Expanded(
               flex: 2,
               child: Text(
-                formatedDecimal(qty),
+                formatedDecimal(item.starQty),
                 textAlign: TextAlign.center,
               )),
           Expanded(
               flex: 1,
               child: Text(
-                unit!,
+                item.starUnit,
                 textAlign: TextAlign.center,
               )),
         ],

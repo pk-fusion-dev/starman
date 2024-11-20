@@ -40,9 +40,9 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
-    if (expenseState.errorMessage != null) {
+    if (expenseState.datas.isEmpty) {
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "No Datas",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -95,6 +95,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     final ExpenseModel data =
         state.datas.isNotEmpty ? state.datas[0] : ExpenseModel();
     total = 0;
+    String currency = data.starCurrency ?? '';
     if (data.starIncExpList != null) {
       for (var item in data.starIncExpList!) {
         if (item.starStatus == type) {
@@ -139,42 +140,43 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
             ],
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: CustomCard(
-                title: Column(
-                  children: [
-                    Text("စုစုပေါင်း(${data.starCurrency ?? ''})"),
-                    Text(total.toString()),
-                  ],
-                ),
+            child: CustomCard(
+              title: Column(
                 children: [
-                  ListTile(
-                    titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    title: const Row(
-                      children: [
-                        Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3, child: Text("အမျိုးအစား")),
-                        Expanded(flex: 1, child: Text("ပေးငွေ")),
-                      ],
-                    ),
-                  ),
-                  if (data.starIncExpList != null)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: starIncExpList.length,
-                      itemBuilder: (context, index) {
-                        var item = starIncExpList[index];
-                        if (item.starStatus != type) return Container();
-                        return listItem(
-                          no: index + 1,
-                          type: item.starName,
-                          amount: item.starAmount,
-                        );
-                      },
-                    )
+                  const Text("စုစုပေါင်း"),
+                  Text("$total $currency"),
                 ],
               ),
+              children: [
+                ListTile(
+                  titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                  title: const Row(
+                    children: [
+                      Expanded(child: Text("စဉ်")),
+                      Expanded(flex: 3, child: Text("အမျိုးအစား")),
+                      Expanded(flex: 1, child: Text("ပေးငွေ")),
+                    ],
+                  ),
+                ),
+                if (data.starIncExpList != null)
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.55,
+                    child: Expanded(
+                      child: ListView.builder(
+                        itemCount: starIncExpList.length,
+                        itemBuilder: (context, index) {
+                          var item = starIncExpList[index];
+                          if (item.starStatus != type) return Container();
+                          return listItem(
+                            no: index + 1,
+                            type: item.starName,
+                            amount: item.starAmount,
+                          );
+                        },
+                      ),
+                    ),
+                  )
+              ],
             ),
           ),
         ],

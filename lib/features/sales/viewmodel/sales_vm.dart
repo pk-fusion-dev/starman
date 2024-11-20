@@ -22,8 +22,6 @@ class SalesVm extends _$SalesVm {
   }
 
   Future<void> fetchData({required Map<String, String> params}) async {
-    allData.clear();
-    allVoucher.clear();
     totalPaidAmount = 0;
     totalAmount = 0;
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -35,10 +33,12 @@ class SalesVm extends _$SalesVm {
         if(!users.contains(i.starUserName)){
           users.add(i.starUserName!);
         }
-        totalAmount+=i.starAmount!;
-        totalPaidAmount+=i.starPaidAmount!;
+        totalAmount += i.starAmount!;
+        totalPaidAmount += i.starPaidAmount!;
       }
-      state = SalesState.success(datas,allVoucher,totalAmount,totalPaidAmount,users);
+      state = SalesState.success(
+          datas,allVoucher,totalAmount,totalPaidAmount,users
+      );
     } catch (e) {
       // print(e.toString());
       state = state.copyWith(
@@ -160,15 +160,19 @@ class SalesState {
   );
 
   factory SalesState.success(
-      List<SalesModel> datas,List<StarNsItemList> vouchers,double totalAmount,double totalPaidAmount,List<String> users
+      List<SalesModel> datas,
+      List<StarNsItemList> vouchers,
+      double totalAmount,
+      double totalPaidAmount,
+      List<String> users,
       ) =>
       SalesState(
           isLoading: false,
           datas: datas,
           vouchers: vouchers,
           errorMessage: null,
-          totalPaidAmount: totalAmount,
-          totalAmount: totalPaidAmount,
+          totalAmount: totalAmount,
+          totalPaidAmount: totalPaidAmount,
           users: users,
       );
 

@@ -117,50 +117,57 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
             ],
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: CustomCard(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("အရှုံး/အမြတ်(${data.starCurrency ?? ''})"),
-                    Text(plValue),
-                  ],
-                ),
+            child: CustomCard(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ExpansionTile(
-                    title: Text(
-                      "ဝင်ငွေ",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    children: [
-                      listItem("အရောင်းပမာဏ", data.starSaleAmount ?? 0),
-                      listItem("ကုန်ပစ္စည်းအရင်းတန်ဖိုး",
-                          data.starSoldItemValue ?? 0,
-                          isOut: true),
-                      listItem("အဝယ်လျော့စျေး", data.starPurchaseDiscount ?? 0),
-                      listItem("အခြားဝင်ငွေ", data.starOtherIncome ?? 0),
-                      listItem("စုစုပေါင်းဝင်ငွေ", data.starTotalIncome ?? 0),
-                    ],
-                  ),
-                  ExpansionTile(
-                    title: Text(
-                      "ထွက်ငွေ",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    children: [
-                      listItem("အရောင်းလျော့စျေး", data.starSalesDiscount ?? 0,
-                          isOut: true),
-                      listItem("အရောင်းအခွန်", data.starSalesTax ?? 0,
-                          isOut: true),
-                      listItem("အဝယ်အခွန်", data.starPurchaseTax ?? 0),
-                      listItem("ကုန်ပစ္စည်းဆုံးရှုံးတန်ဖိုး",
-                          data.starDamagedLostAmount ?? 0),
-                      listItem(
-                          "စုစုပေါင်းအသုံးစရိတ်", data.starTotalExpense ?? 0),
-                    ],
-                  ),
+                  Text("အရှုံး/အမြတ်(${data.starCurrency ?? ''})"),
+                  Text(plValue),
                 ],
               ),
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ExpansionTile(
+                          title: Text(
+                            "ဝင်ငွေ",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          children: [
+                            listItem("အရောင်းပမာဏ", data.starSaleAmount ?? 0),
+                            listItem("ကုန်ပစ္စည်းအရင်းတန်ဖိုး",
+                                data.starSoldItemValue ?? 0,
+                                isOut: true),
+                            listItem("အဝယ်လျော့စျေး", data.starPurchaseDiscount ?? 0),
+                            listItem("အခြားဝင်ငွေ", data.starOtherIncome ?? 0),
+                            listItem("စုစုပေါင်းဝင်ငွေ", data.starTotalIncome ?? 0),
+                          ],
+                        ),
+                        ExpansionTile(
+                          title: Text(
+                            "ထွက်ငွေ",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          children: [
+                            listItem("အရောင်းလျော့စျေး", data.starSalesDiscount ?? 0,
+                                isOut: true),
+                            listItem("အရောင်းအခွန်", data.starSalesTax ?? 0,
+                                isOut: true),
+                            listItem("အဝယ်အခွန်", data.starPurchaseTax ?? 0),
+                            listItem("ကုန်ပစ္စည်းဆုံးရှုံးတန်ဖိုး",
+                                data.starDamagedLostAmount ?? 0),
+                            listItem(
+                                "စုစုပေါင်းအသုံးစရိတ်", data.starTotalExpense ?? 0),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
         ],

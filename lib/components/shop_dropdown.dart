@@ -27,7 +27,7 @@ class ShopDropdown extends ConsumerWidget {
         );
       }).toList(),
       onChanged: onSelected,
-      hint: const Text('Select Shop'),
+      hint: const Text('Select Shop',style: TextStyle(color: Colors.white),),
     );
   }
 }

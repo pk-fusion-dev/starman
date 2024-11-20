@@ -61,7 +61,6 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
               if (selectedShop == null) {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
-                starNpItemList.clear();
                 selectedDate = "Today";
                 await ref.read(purchaseVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "NP"});
@@ -99,6 +98,7 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
     totalinv = 0;
     netTotal = 0;
     paidTotal = 0;
+    starNpItemList.clear();
     if (items.isNotEmpty) {
       for (var item in items) {
         if (!userList.contains(item.starUserName)) {
@@ -157,71 +157,72 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
             ],
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: CustomCard(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        const Text("ပြေစာအရေအတွက်"),
-                        Text(
-                          totalinv.toString(),
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text("ကျသင့်ငွေပေါင်း"),
-                        Text(
-                          "$netTotal ${data.starCurrency}",
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text("ပေးငွေပေါင်း"),
-                        Text(
-                          "$paidTotal ${data.starCurrency}",
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+            child: CustomCard(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  ListTile(
-                    titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    textColor: Theme.of(context).colorScheme.secondary,
-                    title: const Row(
-                      children: [
-                        Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3, child: Text("ပြေစာအမှတ်")),
-                        Expanded(flex: 3, child: Text("ကျသင့်ငွေ")),
-                        Expanded(flex: 2, child: Text("ပေးငွေ")),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const Text("ပြေစာအရေအတွက်"),
+                      Text(
+                        totalinv.toString(),
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
                   ),
-                  if (data.starNpItemList != null)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: starNpItemList.length,
-                      itemBuilder: (context, index) {
-                        var item = starNpItemList[index];
-                        // if (item.starUserName != user) return Container();
-                        return listItem(
-                          no: index + 1,
-                          inv: item.starInvovice,
-                          namount: item.starAmount,
-                          pamount: item.starPaidAmount,
-                        );
-                      },
-                    )
+                  Column(
+                    children: [
+                      const Text("ကျသင့်ငွေပေါင်း"),
+                      Text(
+                        "$netTotal ${data.starCurrency}",
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      const Text("ပေးငွေပေါင်း"),
+                      Text(
+                        "$paidTotal ${data.starCurrency}",
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
                 ],
               ),
+              children: [
+                ListTile(
+                  titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                  textColor: Theme.of(context).colorScheme.secondary,
+                  title: const Row(
+                    children: [
+                      Expanded(child: Text("စဉ်")),
+                      Expanded(flex: 3, child: Text("ပြေစာအမှတ်")),
+                      Expanded(flex: 3, child: Text("ကျသင့်ငွေ")),
+                      Expanded(flex: 2, child: Text("ပေးငွေ")),
+                    ],
+                  ),
+                ),
+                if (data.starNpItemList != null)
+                SingleChildScrollView(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.55,
+                    child: ListView.builder(
+                      itemCount: starNpItemList.length,
+                      itemBuilder: (context, index) {
+                       var item = starNpItemList[index];
+                    // if (item.starUserName != user) return Container();
+                        return listItem(
+                        no: index + 1,
+                        inv: item.starInvovice,
+                        namount: item.starAmount,
+                        pamount: item.starPaidAmount,
+                    );
+                  },
+                ),
+                  ),
+                )
+              ],
             ),
           ),
         ],

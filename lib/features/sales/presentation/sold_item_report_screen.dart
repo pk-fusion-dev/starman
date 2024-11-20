@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
 import 'package:starman/components/fusion_date_picker.dart';
+import 'package:starman/components/ios_loading_indication.dart';
 import 'package:starman/components/loading_indicator.dart';
 import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/sales/models/sold_item_model.dart';
@@ -22,9 +24,10 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
   String? selectedShop;
   String? selectedDate;
   SharedPreferences? prefs;
-  List<StarItemList> starItemList = [];
-  double totalStock = 0;
-  double totalAmount = 0;
+  final refreshController = RefreshController();
+  List<StarItemList> allItemList = [];
+  List<StarItemList> showItemList = [];
+  int maxCount = 20;
 
   @override
   void initState() {
@@ -38,6 +41,17 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
   @override
   Widget build(BuildContext context) {
     final SoldItemState soldItemState = ref.watch(soldItemVmProvider);
+    if(soldItemState.datas.isNotEmpty){
+      allItemList = soldItemState.datas[0].starItemList!;
+    }
+    // print("build again");
+    if (allItemList.isNotEmpty) {
+      showItemList.clear();
+      maxCount = allItemList.length < maxCount ? allItemList.length : maxCount;
+      for (int i = 0; i < maxCount; i++) {
+        showItemList.add(allItemList[i]);
+      }
+    }
     if (prefs != null) {
       selectedShop = prefs?.getString("lastShop");
     }
@@ -58,7 +72,9 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
               if (selectedShop == null) {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
-                starItemList.clear();
+                showItemList.clear();
+                maxCount = 20;
+                refreshController.loadFailed();
                 selectedDate = "Today";
                 await ref.read(soldItemVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "SI"});
@@ -95,13 +111,7 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
   Widget _buildBody(SoldItemState state) {
     final SoldItemModel data =
         state.datas.isNotEmpty ? state.datas[0] : SoldItemModel();
-    totalStock = 0;
-    totalAmount = 0;
-    if (data.starItemList != null) {
-      starItemList = data.starItemList!;
-      totalStock = data.starTotalQty!;
-      totalAmount = data.starTotalAmount!;
-    }
+    String currency = data.starCurrency ?? '';
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -121,6 +131,8 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
               FusionDatePick(
                 selectedDate: selectedDate,
                 onSelected: (value) {
+                  maxCount = 20;
+                  refreshController.loadFailed();
                   ref
                       .read(soldItemVmProvider.notifier)
                       .loadDataByFilter(date: value!);
@@ -132,62 +144,102 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
             ],
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: CustomCard(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        const Text("ကုန်ပစ္စည်းအရေအတွက်"),
-                        Text(
-                          formatedDecimal(totalStock),
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Text("ကျသင့်ငွေပေါင်း"),
-                        Text(
-                          totalAmount.toString(),
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+            child: CustomCard(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  ListTile(
-                    titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    textColor: Theme.of(context).colorScheme.secondary,
-                    title: const Row(
-                      children: [
-                        Expanded(child: Text("စဉ်")),
-                        Expanded(flex: 3, child: Text("အမည်")),
-                        Expanded(flex: 2, child: Text("အရေအတွက်")),
-                        Expanded(flex: 2, child: Text("ကျသင့်ငွေ")),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const Text("ကုန်ပစ္စည်းအရေအတွက်"),
+                      Text(
+                        formatedDecimal(state.totalQty),
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
                   ),
-                  if (data.starItemList != null)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: starItemList.length,
-                      itemBuilder: (context, index) {
-                        var item = starItemList[index];
-                        // if (item.starUserName != user) return Container();
-                        return listItem(
-                          no: index + 1,
-                          name: item.starItemName,
-                          quantity: item.starQty,
-                          amount: item.starAmount,
-                        );
-                      },
-                    )
+                  Column(
+                    children: [
+                      const Text("ကျသင့်ငွေပေါင်း"),
+                      Text(
+                        "${state.totalAmount} $currency",
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
                 ],
               ),
+              children: [
+                ListTile(
+                  titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                  textColor: Theme.of(context).colorScheme.secondary,
+                  title: const Row(
+                    children: [
+                      Expanded(child: Text("စဉ်")),
+                      Expanded(flex: 3, child: Text("အမည်")),
+                      Expanded(flex: 2, child: Text("အရေအတွက်")),
+                      Expanded(flex: 2, child: Text("ကျသင့်ငွေ")),
+                    ],
+                  ),
+                ),
+                if (data.starItemList != null)
+                  SingleChildScrollView(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: SmartRefresher(
+                        controller: refreshController,
+                        enablePullDown: false,
+                        enablePullUp: true,
+                        footer: CustomFooter(
+                            builder: (context, LoadStatus? mode) {
+                              Widget body = Container();
+                              if (mode == LoadStatus.loading) {
+                                body = const IosLoadingIndication();
+                              } else if (mode == LoadStatus.noMore) {
+                                body = const Text("No More Data...");
+                              }
+                              return SizedBox(
+                                height: 55,
+                                child: Center(
+                                  child: body,
+                                ),
+                              );
+                            }),
+                        onLoading: () {
+                          if (maxCount == allItemList.length) {
+                            refreshController.loadNoData();
+                          } else {
+                            Future.delayed(const Duration(microseconds: 1000),
+                                    () {
+                                  int rmData = allItemList.length - maxCount;
+                                  int nextCount = rmData >= 10 ? 10 : rmData;
+                                  for (int i = maxCount;
+                                  i < maxCount + nextCount;
+                                  i++) {
+                                    showItemList.add(allItemList[i]);
+                                  }
+                                  maxCount += nextCount;
+                                  setState(() {});
+                                });
+                            refreshController.loadComplete();
+                          }
+                        },
+                        child: ListView.builder(
+                          itemCount: showItemList.length,
+                          itemBuilder: (context, index) {
+                            var item = showItemList[index];
+                            // if (item.starUserName != user) return Container();
+                            return listItem(
+                              no: index + 1,
+                              name: item.starItemName,
+                              quantity: item.starQty,
+                              amount: item.starAmount,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+              ],
             ),
           ),
         ],
@@ -204,8 +256,8 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
         children: [
           Expanded(child: Text(no.toString())),
           Expanded(flex: 3, child: Text(name!)),
-          Expanded(flex: 2, child: Text(formatedDecimal(quantity))),
-          Expanded(flex: 2, child: Text(formatedDecimal(amount))),
+          Expanded(flex: 2, child: Text(formatedDecimal(quantity),textAlign: TextAlign.center,)),
+          Expanded(flex: 2, child: Text(formatedDecimal(amount),textAlign: TextAlign.center,)),
         ],
       ),
     );

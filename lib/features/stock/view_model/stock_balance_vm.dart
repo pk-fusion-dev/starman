@@ -54,7 +54,9 @@ class StockBalanceVm extends _$StockBalanceVm {
     try {
       var datas = await ZipManager.loadDataStockBalance(
           "StarSB.json", StockBalanceModel.fromJson);
-      allData = datas;
+      for(var data in datas){
+        allData.add(data);
+      }
       allStock = allData[0].starStockBalanceList!;
       for (var stock in allData[0].starStockBalanceList!) {
         if (!categories.contains(stock.starCategoryName)) {
