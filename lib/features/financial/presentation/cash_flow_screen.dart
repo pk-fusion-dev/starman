@@ -34,8 +34,8 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
   @override
   Widget build(BuildContext context) {
     final CashFlowState cashFlowState = ref.watch(cashFlowVmProvider);
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("cf_Shop");
     }
     if(cashFlowState.errorMessage!=null){
       Fluttertoast.showToast(
@@ -56,6 +56,7 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
                 selectedDate = "Today";
+                prefs?.setString("cf_Shop", selectedShop!);
                 await ref.read(cashFlowVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "CF"});
               }
@@ -113,7 +114,6 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),

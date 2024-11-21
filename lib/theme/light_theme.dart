@@ -8,6 +8,13 @@ final lightTheme = ThemeData(
     primary: ColorConst.lightPrimary,
     secondary: Colors.white,
   ),
+  expansionTileTheme: const ExpansionTileThemeData(
+    collapsedTextColor: Colors.white,
+    collapsedIconColor: Colors.white,
+  ),
+  listTileTheme: const ListTileThemeData(
+    textColor: Colors.white,
+  ),
   appBarTheme: AppBarTheme(
       backgroundColor: ColorConst.lightPrimary,
       foregroundColor: Colors.white,

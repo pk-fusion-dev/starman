@@ -37,8 +37,8 @@ class _OutstandingCustomerScreenState
   Widget build(BuildContext context) {
     final OutstandingCustomerState outstandingCustomerState =
         ref.watch(outstandingCustomerVmProvider);
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("oc_Shop");
     }
     if (outstandingCustomerState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -57,6 +57,7 @@ class _OutstandingCustomerScreenState
               if (selectedShop == null) {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
+                prefs?.setString("oc_Shop", selectedShop!);
                 await ref
                     .read(outstandingCustomerVmProvider.notifier)
                     .fetchData(
@@ -114,7 +115,6 @@ class _OutstandingCustomerScreenState
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),

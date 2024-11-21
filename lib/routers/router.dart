@@ -12,6 +12,7 @@ import 'package:starman/features/purchase/presentation/purchase_item_report_scre
 import 'package:starman/features/purchase/presentation/purchase_report_screen.dart';
 import 'package:starman/features/sales/presentation/sales_report_screen.dart';
 import 'package:starman/features/sales/presentation/sold_item_report_screen.dart';
+import 'package:starman/features/setting/presentation/setting_screen.dart';
 import 'package:starman/features/stock/presentation/stock_balance_screen.dart';
 import 'package:starman/features/stock/presentation/stock_reorder_screen.dart';
 
@@ -31,6 +32,7 @@ class RouteName {
   static String stockReorder = 'stockReorder';
   static String outstandingCustomer = 'outstandingCustomer';
   static String outstandingSupplier = 'outstandingSupplier';
+  static String setting = 'setting';
 }
 
 class RoutePath {
@@ -49,6 +51,7 @@ class RoutePath {
   static String stockReorder = '/stockReorder';
   static String outstandingCustomer = '/outstandingCustomer';
   static String outstandingSupplier = '/outstandingSupplier';
+  static String setting = '/setting';
 }
 
 final appRoute = GoRouter(routes: [
@@ -126,5 +129,10 @@ final appRoute = GoRouter(routes: [
     path: RoutePath.outstandingSupplier,
     name: RouteName.outstandingSupplier,
     builder: (context, state) => const OutstandingSupplierScreen(),
+  ),
+  GoRoute(
+    path: RoutePath.setting,
+    name: RouteName.setting,
+    builder: (context, state) => const SettingScreen(),
   ),
 ], initialLocation: RoutePath.splash);

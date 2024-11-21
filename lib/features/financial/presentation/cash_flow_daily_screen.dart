@@ -36,8 +36,8 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
   Widget build(BuildContext context) {
     final CashFlowDailyState cashFlowDailyState =
         ref.watch(cashFlowDailyVmProvider);
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("cfd_Shop");
     }
     if(cashFlowDailyState.errorMessage!=null){
       Fluttertoast.showToast(
@@ -58,6 +58,7 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
                 selectedDate = "Today";
+                prefs?.setString("cfd_Shop", selectedShop!);
                 await ref.read(cashFlowDailyVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "CFD"});
               }
@@ -109,7 +110,6 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),

@@ -29,7 +29,7 @@ class _LicenseExpireScreenState extends State<LicenseExpireScreen> {
             SizedBox(
               width: 200,
               height: 200,
-              child: Image.asset("assets/images/logo.png"),
+              child: Image.asset("assets/images/Starman.png"),
             ),
             Text(
               starID ?? "-",
@@ -39,7 +39,7 @@ class _LicenseExpireScreenState extends State<LicenseExpireScreen> {
               height: 20,
             ),
             const Text("Your Starman license is expired."),
-            const Text("Contact to 09427666386."),
+            const SelectableText("Contact to 09427666386."),
           ],
         ),
       ),

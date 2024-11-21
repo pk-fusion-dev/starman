@@ -33,6 +33,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     prefs = await SharedPreferences.getInstance();
     // prefs.remove("starID");
     starID = prefs.getString("starID");
+    await Future.delayed(Durations.long1,(){
+    });
     if (starID == null) {
       // ignore: use_build_context_synchronously
       context.goNamed(RouteName.register);
@@ -48,14 +50,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         }
         // ignore: use_build_context_synchronously
         String? pin = prefs.getString("passcode");
-        await screenLock(
+        await Future.delayed(Durations.medium1,()async{
+          screenLock(
             // ignore: use_build_context_synchronously
-            context: context,
-            correctString: pin!,
-            canCancel: false,
-            onUnlocked: () {
-              context.goNamed(RouteName.profitLost);
-            });
+              context: context,
+              config: ScreenLockConfig(
+                // ignore: use_build_context_synchronously
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                buttonStyle: const ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll(Colors.white),
+                ),
+              ),
+              correctString: pin!,
+              canCancel: false,
+              onUnlocked: () {
+                context.goNamed(RouteName.profitLost);
+              });
+        });
       } catch (e) {
         // setState(() {
         //   isDisconnected = true;
@@ -71,13 +82,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: Stack(
         children: [
           Center(
-              child: SizedBox(
-            width: 200,
-            height: 200,
-            child: Image.asset(
-              "assets/images/logo.png",
-            ),
-          )),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: Image.asset(
+                      "assets/images/Starman.png",
+                    ),
+                  ),
+                  const Text(
+                    "STARMAN",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  )
+                ],
+              )),
           if (isDisconnected)
             const Align(
               alignment: Alignment.bottomCenter,

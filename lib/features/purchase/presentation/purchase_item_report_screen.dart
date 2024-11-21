@@ -52,8 +52,8 @@ class _PurchaseItemReportScreenState extends ConsumerState<PurchaseItemReportScr
         showItemList.add(allItemList[i]);
       }
     }
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("purchase_Shop");
     }
     if (purchaseItemState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -76,6 +76,7 @@ class _PurchaseItemReportScreenState extends ConsumerState<PurchaseItemReportScr
                 maxCount = 20;
                 refreshController.loadFailed();
                 selectedDate = "Today";
+                prefs?.setString("purchase_Shop", selectedShop!);
                 await ref.read(purchaseItemVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "PI"});
               }
@@ -124,7 +125,6 @@ class _PurchaseItemReportScreenState extends ConsumerState<PurchaseItemReportScr
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),

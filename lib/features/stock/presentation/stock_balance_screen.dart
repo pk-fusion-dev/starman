@@ -48,8 +48,8 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
         showStock.add(allStock[i]);
       }
     }
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("stock_balance_Shop");
     }
     if (stockBalanceState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -70,6 +70,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
               } else {
                 maxCount = 20;
                 refreshController.loadFailed();
+                prefs?.setString("stock_balance_Shop", selectedShop!);
                 await ref.read(stockBalanceVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "SB"});
               }
@@ -121,7 +122,6 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
                     onSelected: (value) {
                       setState(() {
                         selectedShop = value;
-                        prefs?.setString("lastShop", value!);
                       });
                     },
                   ),

@@ -33,6 +33,7 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
 
   Future<void> _register() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? passCode = prefs.getString("passcode");
     String starID = idController.text;
     try {
       StarGroupModel data =
@@ -46,17 +47,31 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
         if (lastSubscriptionModel.licenseInfo?.licenseStatus == "ACTIVE") {
           // ignore: use_build_context_synchronously
           // context.goNamed(RouteName.expire);
-          screenLockCreate(
+          if(passCode==null){
+            screenLockCreate(
+              // ignore: use_build_context_synchronously
+              context: context,
+              config: ScreenLockConfig(
+                // ignore: use_build_context_synchronously
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                buttonStyle: const ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll(Colors.white),
+                ),
+              ),
+              canCancel: false,
+              onConfirmed: (pin) {
+                prefs.setString("starID", starID);
+                prefs.setString("endDate", lastSubscriptionModel.licenseInfo!.endDate!);
+                prefs.setString("passcode", pin);
+                context.goNamed(RouteName.profitLost);
+              },
+            );
+          }else{
+            prefs.setString("starID", starID);
+            prefs.setString("endDate", lastSubscriptionModel.licenseInfo!.endDate!);
             // ignore: use_build_context_synchronously
-            context: context,
-            canCancel: false,
-            onConfirmed: (pin) {
-              prefs.setString("starID", starID);
-              prefs.setString("endDate", lastSubscriptionModel.licenseInfo!.endDate!);
-              prefs.setString("passcode", pin);
-              context.goNamed(RouteName.profitLost);
-            },
-          );
+            context.goNamed(RouteName.splash);
+          }
         } else {
           // ignore: use_build_context_synchronously
           context.goNamed(RouteName.expire);
@@ -76,12 +91,16 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(
-            height: 150,
+            height: 100,
           ),
           SizedBox(
             width: 200,
             height: 200,
-            child: Image.asset("assets/images/sslogo.png"),
+            child: Image.asset("assets/images/Starman.png"),
+          ),
+          const Text(
+            "Starman",
+            style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),
           ),
           Container(
             margin: const EdgeInsets.all(20),

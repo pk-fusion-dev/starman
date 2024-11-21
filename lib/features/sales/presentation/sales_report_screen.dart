@@ -50,8 +50,8 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
         showData.add(allData[i]);
       }
     }
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("sales_Shop");
     }
     if (salesState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -73,6 +73,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                 maxCount = 10;
                 selectedDate = "Today";
                 user = "All";
+                prefs?.setString("sales_Shop", selectedShop!);
                 refreshController.loadFailed();
                 await ref.read(salesVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "NS"});
@@ -123,7 +124,6 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),

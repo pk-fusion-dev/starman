@@ -34,8 +34,8 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
   @override
   Widget build(BuildContext context) {
     final ProfitLoseState profitLoseState = ref.watch(profitLoseVmProvider);
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("pl_Shop");
     }
     if(profitLoseState.errorMessage!=null){
       Fluttertoast.showToast(
@@ -56,6 +56,7 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
                 selectedDate = "Today";
+                prefs?.setString("pl_Shop", selectedShop!);
                 await ref.read(profitLoseVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "PL"});
               }
@@ -99,7 +100,6 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),

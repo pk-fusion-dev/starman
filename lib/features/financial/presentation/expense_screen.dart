@@ -37,12 +37,12 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     final ExpenseState expenseState = ref.watch(expenseVmProvider);
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("exp_Shop");
     }
-    if (expenseState.datas.isEmpty) {
+    if (expenseState.errorMessage!=null) {
       Fluttertoast.showToast(
-          msg: "No Datas",
+          msg: "Operation fails",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -59,6 +59,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
               } else {
                 starIncExpList.clear();
                 selectedDate = "Today";
+                prefs?.setString("exp_Shop", selectedShop!);
                 await ref.read(expenseVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "EXP"});
               }
@@ -116,7 +117,6 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),
@@ -159,9 +159,9 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                   ),
                 ),
                 if (data.starIncExpList != null)
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.55,
-                    child: Expanded(
+                  SingleChildScrollView(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height*0.55,
                       child: ListView.builder(
                         itemCount: starIncExpList.length,
                         itemBuilder: (context, index) {

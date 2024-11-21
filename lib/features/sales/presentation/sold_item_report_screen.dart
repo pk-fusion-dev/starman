@@ -52,8 +52,8 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
         showItemList.add(allItemList[i]);
       }
     }
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("sold_item_Shop");
     }
     if (soldItemState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -76,6 +76,7 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
                 maxCount = 20;
                 refreshController.loadFailed();
                 selectedDate = "Today";
+                prefs?.setString("sold_item_Shop", selectedShop!);
                 await ref.read(soldItemVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "SI"});
               }
@@ -124,7 +125,6 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),

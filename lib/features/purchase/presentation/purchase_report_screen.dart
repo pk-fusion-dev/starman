@@ -41,8 +41,8 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
   @override
   Widget build(BuildContext context) {
     final PurchaseState purchaseState = ref.watch(purchaseVmProvider);
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("purchase_item_Shop");
     }
     if (purchaseState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -62,6 +62,7 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
                 selectedDate = "Today";
+                prefs?.setString("purchase_item_Shop", selectedShop!);
                 await ref.read(purchaseVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "NP"});
               }
@@ -133,7 +134,6 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
                 onSelected: (value) {
                   setState(() {
                     selectedShop = value;
-                    prefs?.setString("lastShop", value!);
                   });
                 },
               ),

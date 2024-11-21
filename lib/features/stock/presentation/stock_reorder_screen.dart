@@ -5,6 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
+import 'package:starman/components/ios_loading_indication.dart';
 import 'package:starman/components/loading_indicator.dart';
 import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/stock/models/stock_reorder_model.dart';
@@ -48,8 +49,8 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
         showStock.add(allStock[i]);
       }
     }
-    if (prefs != null) {
-      selectedShop = prefs?.getString("lastShop");
+    if (prefs != null && selectedShop==null) {
+      selectedShop = prefs?.getString("stock_reorder_Shop");
     }
     if (stockReorderState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -69,6 +70,7 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
                 selectedDate = "Today";
+                prefs?.setString("stock_reorder_Shop", selectedShop!);
                 await ref.read(stockReorderVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "RS"});
               }
@@ -116,7 +118,6 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
                     onSelected: (value) {
                       setState(() {
                         selectedShop = value;
-                        prefs?.setString("lastShop", value!);
                       });
                     },
                   ),
@@ -166,7 +167,7 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
                               builder: (context, LoadStatus? mode) {
                             Widget body = Container();
                             if (mode == LoadStatus.loading) {
-                              body = const CircularProgressIndicator();
+                              body = const IosLoadingIndication();
                             } else if (mode == LoadStatus.noMore) {
                               body = const Text("No More Data...");
                             }

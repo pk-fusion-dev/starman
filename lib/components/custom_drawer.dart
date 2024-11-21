@@ -46,39 +46,45 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorConst.lightSurface,
       child: Column(
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: ColorConst.lightSurface,
+              color: ColorConst.lightPrimary,
             ),
-            child: Row(
+            child: Column(
               children: [
-                SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: Image.asset('assets/images/logo.png'),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Image.asset('assets/images/Starman.png'),
+                    ),
+                    const Text(
+                      "  Starman",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                Column(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SelectableText(
-                      "StarID: $starID",
+                      "$starID --- ",
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                     Text(
-                      "End Date: $finalEndDate",
+                      "$rmDay days",
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    Text(
-                      "Remaining days : $rmDay",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                   ],
@@ -215,9 +221,43 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     ),
                   ],
                 ),
+                ListTile(
+                  title: const Text("စနစ်ထိမ်းသိမ်းခြင်း"),
+                  onTap: (){
+                    context.goNamed(RouteName.setting);
+                  },
+                )
               ],
             ),
           ),
+          ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Logout"),
+                IconButton(
+                    onPressed: () async{
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.remove('starID');
+                      prefs.remove('pl_Shop');
+                      prefs.remove('cf_Shop');
+                      prefs.remove('cfd_Shop');
+                      prefs.remove('exp_Shop');
+                      prefs.remove('sales_Shop');
+                      prefs.remove('sold_item_Shop');
+                      prefs.remove('purchase_Shop');
+                      prefs.remove('purchase_item_Shop');
+                      prefs.remove('stock_balance_Shop');
+                      prefs.remove('stock_reorder_Shop');
+                      prefs.remove('oc_Shop');
+                      prefs.remove('os_Shop');
+                      context.goNamed(RouteName.splash);
+                    },
+                    icon: const Icon(Icons.logout,color: Colors.white,)
+                )
+              ],
+            ),
+          )
         ],
       ),
     );
