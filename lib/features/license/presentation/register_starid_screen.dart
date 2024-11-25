@@ -25,7 +25,7 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: SingleChildScrollView(
           child: _buildForm(),
         ));
@@ -126,14 +126,14 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
               },
             ),
           ),
-          CupertinoButton.filled(
+          CupertinoButton(
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 Fluttertoast.showToast(msg: "Please Wait...");
                 _register();
               }
             },
-            child: const Text("REGISTER"),
+            child: const Text("REGISTER",style: TextStyle(color: Colors.white),),
           ),
         ],
       ),
