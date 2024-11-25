@@ -67,9 +67,10 @@ class ZipManager {
       List<dynamic> parsedJson = jsonDecode(jsonData);
       // Assuming each item in the list is a map and filtering by selectedDateFilter
       var datas = parsedJson.map((data) => fromJson(data)).toList();
-      // print(datas);
       return datas;
-    } catch (e) {
+    }on PathNotFoundException catch(e){
+      return [];
+    }catch (e) {
       log('Error parsing JSON data: $e');
     }
   }
@@ -89,7 +90,9 @@ class ZipManager {
       var datas = parsedJson.map((data) => fromJson(data)).toList();
       // print(datas);
       return datas;
-    } catch (e) {
+    }on PathNotFoundException catch(e){
+      return [];
+    }catch (e) {
       log('Error parsing JSON data: $e');
     }
   }

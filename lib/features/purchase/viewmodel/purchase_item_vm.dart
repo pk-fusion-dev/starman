@@ -45,7 +45,9 @@ class PurchaseItemVm extends _$PurchaseItemVm {
       totalAmount = allData[0].starTotalAmount!;
       totalQty = allData[0].starTotalQty!;
       state = PurchaseItemState.success(allData,totalQty,totalAmount);
-    } catch (e) {
+    }on RangeError catch(e){
+      state = state.copyWith(isLoading: false);
+    }catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }

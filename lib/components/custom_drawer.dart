@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:starman/core/utils/expansionTilePorvider.dart';
+import 'package:starman/features/star_links/providers/star_links_provider.dart';
 import 'package:starman/routers/router.dart';
 import 'package:starman/theme/color_const.dart';
 
-class CustomDrawer extends StatefulWidget {
+class CustomDrawer extends ConsumerStatefulWidget {
   const CustomDrawer({super.key});
 
   @override
-  State<CustomDrawer> createState() => _CustomDrawerState();
+  ConsumerState<CustomDrawer> createState() => _CustomDrawerState();
 }
 
-class _CustomDrawerState extends State<CustomDrawer> {
+class _CustomDrawerState extends ConsumerState<CustomDrawer> {
   String? rmDay;
   String? finalEndDate;
   String? starID;
-  ExpansionTileController finanacialTile = ExpansionTileController();
+  ExpansionTileController financialTile = ExpansionTileController();
   ExpansionTileController salesTile = ExpansionTileController();
   ExpansionTileController purchaseTile = ExpansionTileController();
   ExpansionTileController stockTile = ExpansionTileController();
@@ -30,13 +33,30 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   Future getRmDays() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    int index = ref.watch(expansionTileProvider);
     var currentDate = DateTime.now();
     String endDateString = prefs.getString("endDate")!;
     DateFormat dateFormat = DateFormat("dd/MM/yyyy");
     DateTime endDate = dateFormat.parse(endDateString);
     int remainingDays = endDate.difference(currentDate).inDays;
     setState(() {
-      // ostTile.expand();
+      switch(index){
+        case 1:
+          financialTile.expand();
+          break;
+        case 2:
+          salesTile.expand();
+          break;
+        case 3:
+          purchaseTile.expand();
+          break;
+        case 4:
+          stockTile.expand();
+          break;
+        case 5:
+          ostTile.expand();
+          break;
+      }
       rmDay = remainingDays.toString();
       finalEndDate = endDateString;
       starID = prefs.getString("starID")!;
@@ -97,7 +117,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
               children: [
                 ExpansionTile(
                   title: const Text("ငွေစာရင်းအစီရင်ခံစာ"),
-                  controller: finanacialTile,
+                  controller: financialTile,
+                  onExpansionChanged: (_){
+                    ref.read(expansionTileProvider.notifier).setIndex(1);
+                  },
                   children: [
                     listItem(
                       context,
@@ -136,6 +159,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 ExpansionTile(
                   title: const Text("အရောင်းအစီရင်ခံစာ"),
                   controller: salesTile,
+                  onExpansionChanged: (_){
+                    ref.read(expansionTileProvider.notifier).setIndex(2);
+                  },
                   children: [
                     listItem(
                       context,
@@ -158,6 +184,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 ExpansionTile(
                   title: const Text("အဝယ်အစီရင်ခံစာ"),
                   controller: purchaseTile,
+                  onExpansionChanged: (_){
+                    ref.read(expansionTileProvider.notifier).setIndex(3);
+                  },
                   children: [
                     listItem(
                       context,
@@ -180,6 +209,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 ExpansionTile(
                   title: const Text("ကုန်ပစ္စည်းအစီရင်ခံစာ"),
                   controller: stockTile,
+                  onExpansionChanged: (_){
+                    ref.read(expansionTileProvider.notifier).setIndex(4);
+                  },
                   children: [
                     listItem(
                       context,
@@ -202,6 +234,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 ExpansionTile(
                   title: const Text("အကြွေးအစီရင်ခံစာ"),
                   controller: ostTile,
+                  onExpansionChanged: (_){
+                    ref.read(expansionTileProvider.notifier).setIndex(5);
+                  },
                   children: [
                     listItem(
                       context,
@@ -237,21 +272,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 const Text("Logout"),
                 IconButton(
                     onPressed: () async{
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      prefs.remove('starID');
-                      prefs.remove('pl_Shop');
-                      prefs.remove('cf_Shop');
-                      prefs.remove('cfd_Shop');
-                      prefs.remove('exp_Shop');
-                      prefs.remove('sales_Shop');
-                      prefs.remove('sold_item_Shop');
-                      prefs.remove('purchase_Shop');
-                      prefs.remove('purchase_item_Shop');
-                      prefs.remove('stock_balance_Shop');
-                      prefs.remove('stock_reorder_Shop');
-                      prefs.remove('oc_Shop');
-                      prefs.remove('os_Shop');
-                      context.goNamed(RouteName.splash);
+                      await logout();
                     },
                     icon: const Icon(Icons.logout,color: Colors.white,)
                 )
@@ -261,6 +282,26 @@ class _CustomDrawerState extends State<CustomDrawer> {
         ],
       ),
     );
+  }
+
+  Future<void> logout() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('starID');
+    prefs.remove('pl_Shop');
+    prefs.remove('cf_Shop');
+    prefs.remove('cfd_Shop');
+    prefs.remove('exp_Shop');
+    prefs.remove('sales_Shop');
+    prefs.remove('sold_item_Shop');
+    prefs.remove('purchase_Shop');
+    prefs.remove('purchase_item_Shop');
+    prefs.remove('stock_balance_Shop');
+    prefs.remove('stock_reorder_Shop');
+    prefs.remove('oc_Shop');
+    prefs.remove('os_Shop');
+    ref.invalidate(starLinksProvider);
+    // ignore: use_build_context_synchronously
+    context.goNamed(RouteName.splash);
   }
 
   Widget listItem(context, Icon icon, String title, VoidCallback fun) {

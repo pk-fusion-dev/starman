@@ -70,8 +70,9 @@ class StockBalanceVm extends _$StockBalanceVm {
         allData[0].starTotalQty!,
         allData[0].starTotalAmount!,
       );
-    } catch (e) {
-      // print(e.toString());
+    }on RangeError catch(e){
+      state = state.copyWith(isLoading: false);
+    }catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }

@@ -52,7 +52,9 @@ class OutstandingSupplierVm extends _$OutstandingSupplierVm {
         allData,
         allList,
       );
-    } catch (e) {
+    }on RangeError catch(e){
+      state = state.copyWith(isLoading: false);
+    }catch (e) {
       // print(e.toString());
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
@@ -26,6 +27,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
   int maxCount = 20;
   List<StarStockBalanceList> allStock = [];
   List<StarStockBalanceList> showStock = [];
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -50,6 +52,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
     }
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("stock_balance_Shop");
+      lastSyncDate = prefs?.getString("stock_balance_Date") ?? '';
     }
     if (stockBalanceState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -71,6 +74,9 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
                 maxCount = 20;
                 refreshController.loadFailed();
                 prefs?.setString("stock_balance_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("stock_balance_Date", lastSyncDate!);
                 await ref.read(stockBalanceVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "SB"});
               }
@@ -125,13 +131,19 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
                       });
                     },
                   ),
+                  catDropdown(state),
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  catDropdown(state),
+                  Container(),
+                  Text(
+                    lastSyncDate!,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
-              )
+              ),
             ],
           ),
           Expanded(

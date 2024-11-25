@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
@@ -28,6 +29,7 @@ class _PurchaseItemReportScreenState extends ConsumerState<PurchaseItemReportScr
   List<StarItemList> allItemList = [];
   List<StarItemList> showItemList = [];
   int maxCount = 20;
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -53,7 +55,8 @@ class _PurchaseItemReportScreenState extends ConsumerState<PurchaseItemReportScr
       }
     }
     if (prefs != null && selectedShop==null) {
-      selectedShop = prefs?.getString("purchase_Shop");
+      selectedShop = prefs?.getString("purchase_item_Shop");
+      lastSyncDate = prefs?.getString("purchase_item_Date") ?? '';
     }
     if (purchaseItemState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -76,7 +79,10 @@ class _PurchaseItemReportScreenState extends ConsumerState<PurchaseItemReportScr
                 maxCount = 20;
                 refreshController.loadFailed();
                 selectedDate = "Today";
-                prefs?.setString("purchase_Shop", selectedShop!);
+                prefs?.setString("purchase_item_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("purchase_item_Date", lastSyncDate!);
                 await ref.read(purchaseItemVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "PI"});
               }
@@ -141,6 +147,15 @@ class _PurchaseItemReportScreenState extends ConsumerState<PurchaseItemReportScr
                     selectedDate = value;
                   });
                 },
+              ),
+            ],
+          ),Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(),
+              Text(
+                lastSyncDate!,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),

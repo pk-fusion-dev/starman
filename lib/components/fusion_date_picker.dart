@@ -17,7 +17,7 @@ class FusionDatePick extends StatelessWidget {
     //     width: width,
     //     initialSelection: "today",
     //     dropdownMenuEntries: const [
-    //       DropdownMenuEntry(value: "today", label: "Today"),
+    //       DropdownMenuEntry(value: "today", label: "today"),
     //       DropdownMenuEntry(value: "yesterday", label: "Yesterday"),
     //       DropdownMenuEntry(value: "thismonth", label: "This Month"),
     //       DropdownMenuEntry(value: "lastmonth", label: "Last Month"),
@@ -34,19 +34,19 @@ class FusionDatePick extends StatelessWidget {
       items: const [
         DropdownMenuItem(
           value: "Today",
-          child: Text("Today"),
+          child: Text("ယနေ့"),
         ),
         DropdownMenuItem(
           value: "Yesterday",
-          child: Text("Yesterday"),
+          child: Text("မနေ့က"),
         ),
         DropdownMenuItem(
           value: "This Month",
-          child: Text("This Month"),
+          child: Text("ယခုလ"),
         ),
         DropdownMenuItem(
           value: "Last Month",
-          child: Text("Last Month"),
+          child: Text("ယခင်လ"),
         ),
       ],
       onChanged: onSelected,

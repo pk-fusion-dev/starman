@@ -68,7 +68,9 @@ class SalesVm extends _$SalesVm {
       state = SalesState.success(
           allData,allVoucher,totalAmount,totalPaidAmount,users
       );
-    } catch (e) {
+    }on RangeError catch(e){
+      state = state.copyWith(isLoading: false);
+    }catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }

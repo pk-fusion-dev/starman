@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
@@ -28,6 +29,7 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
   double netTotal = 0;
   double paidTotal = 0;
   List<String> userList = [];
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -42,7 +44,8 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
   Widget build(BuildContext context) {
     final PurchaseState purchaseState = ref.watch(purchaseVmProvider);
     if (prefs != null && selectedShop==null) {
-      selectedShop = prefs?.getString("purchase_item_Shop");
+      selectedShop = prefs?.getString("purchase_Shop");
+      lastSyncDate = prefs?.getString("purchase_Date") ?? '';
     }
     if (purchaseState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -62,7 +65,10 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
                 selectedDate = "Today";
-                prefs?.setString("purchase_item_Shop", selectedShop!);
+                prefs?.setString("purchase_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("purchase_Date", lastSyncDate!);
                 await ref.read(purchaseVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "NP"});
               }
@@ -119,8 +125,10 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
   Widget _buildBody(PurchaseState state) {
     final PurchaseModel data =
         state.datas.isNotEmpty ? state.datas[0] : PurchaseModel();
+    String currency = '';
     if (data.starNpItemList != null) {
       dataFilter(data.starNpItemList!);
+      currency = data.starCurrency!;
     }
     return Container(
       padding: const EdgeInsets.all(10),
@@ -152,8 +160,13 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
             ],
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               userDropdown(),
+              Text(
+                lastSyncDate!,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
           Expanded(
@@ -174,7 +187,7 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
                     children: [
                       const Text("ကျသင့်ငွေပေါင်း"),
                       Text(
-                        "$netTotal ${data.starCurrency}",
+                        "$netTotal $currency",
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],
@@ -183,7 +196,7 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
                     children: [
                       const Text("ပေးငွေပေါင်း"),
                       Text(
-                        "$paidTotal ${data.starCurrency}",
+                        "$paidTotal $currency",
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ],

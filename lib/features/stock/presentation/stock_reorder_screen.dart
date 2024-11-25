@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
@@ -27,6 +28,7 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
   int maxCount = 20;
   List<StockReorderModel> allStock = [];
   List<StockReorderModel> showStock = [];
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
     }
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("stock_reorder_Shop");
+      lastSyncDate = prefs?.getString("stock_reorder_Date") ?? '';
     }
     if (stockReorderState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -71,6 +74,9 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
               } else {
                 selectedDate = "Today";
                 prefs?.setString("stock_reorder_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("stock_reorder_Date", lastSyncDate!);
                 await ref.read(stockReorderVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "RS"});
               }
@@ -121,13 +127,19 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
                       });
                     },
                   ),
+                  catDropdown(state),
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  catDropdown(state),
+                  Container(),
+                  Text(
+                    lastSyncDate!,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
-              )
+              ),
             ],
           ),
           Expanded(

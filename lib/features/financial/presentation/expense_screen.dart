@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
@@ -24,6 +25,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   SharedPreferences? prefs;
   List<StarIncExpList> starIncExpList = [];
   double total = 0;
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     final ExpenseState expenseState = ref.watch(expenseVmProvider);
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("exp_Shop");
+      lastSyncDate = prefs?.getString("exp_Date") ?? '';
     }
     if (expenseState.errorMessage!=null) {
       Fluttertoast.showToast(
@@ -60,6 +63,9 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                 starIncExpList.clear();
                 selectedDate = "Today";
                 prefs?.setString("exp_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("exp_Date", lastSyncDate!);
                 await ref.read(expenseVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "EXP"});
               }
@@ -135,8 +141,13 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
             ],
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               flowDropdown(data),
+              Text(
+                lastSyncDate!,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
           Expanded(

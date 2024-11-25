@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
@@ -28,6 +29,7 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
   List<StarItemList> allItemList = [];
   List<StarItemList> showItemList = [];
   int maxCount = 20;
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -54,6 +56,7 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
     }
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("sold_item_Shop");
+      lastSyncDate = prefs?.getString("sold_item_Date") ?? '';
     }
     if (soldItemState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -77,6 +80,9 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
                 refreshController.loadFailed();
                 selectedDate = "Today";
                 prefs?.setString("sold_item_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("sold_item_Date", lastSyncDate!);
                 await ref.read(soldItemVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "SI"});
               }
@@ -142,6 +148,15 @@ class _SoldItemReportScreenState extends ConsumerState<SoldItemReportScreen> {
                 },
               ),
             ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(),
+              Text(
+                lastSyncDate!,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),            ],
           ),
           Expanded(
             child: CustomCard(

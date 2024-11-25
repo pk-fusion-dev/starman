@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
@@ -21,6 +22,7 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
   String? selectedShop;
   String? selectedDate;
   SharedPreferences? prefs;
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
     final ProfitLoseState profitLoseState = ref.watch(profitLoseVmProvider);
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("pl_Shop");
+      lastSyncDate = prefs?.getString("pl_Date") ?? '';
     }
     if(profitLoseState.errorMessage!=null){
       Fluttertoast.showToast(
@@ -57,6 +60,9 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
               } else {
                 selectedDate = "Today";
                 prefs?.setString("pl_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("pl_Date", lastSyncDate!);
                 await ref.read(profitLoseVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "PL"});
               }
@@ -113,6 +119,16 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
                     selectedDate = value;
                   });
                 },
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(),
+              Text(
+                lastSyncDate!,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),

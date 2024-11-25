@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
@@ -23,6 +24,7 @@ class _OutstandingCustomerScreenState
   SharedPreferences? prefs;
   double totalStock = 0;
   double totalAmount = 0;
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _OutstandingCustomerScreenState
         ref.watch(outstandingCustomerVmProvider);
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("oc_Shop");
+      lastSyncDate = prefs?.getString("oc_Date") ?? '';
     }
     if (outstandingCustomerState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -58,6 +61,9 @@ class _OutstandingCustomerScreenState
                 Fluttertoast.showToast(msg: "Please select the shop...");
               } else {
                 prefs?.setString("oc_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("oc_Date", lastSyncDate!);
                 await ref
                     .read(outstandingCustomerVmProvider.notifier)
                     .fetchData(
@@ -117,6 +123,10 @@ class _OutstandingCustomerScreenState
                     selectedShop = value;
                   });
                 },
+              ),
+              Text(
+                lastSyncDate!,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),

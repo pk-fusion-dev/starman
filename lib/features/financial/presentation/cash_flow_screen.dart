@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
 import 'package:starman/components/custom_drawer.dart';
@@ -21,6 +22,7 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
   String? selectedShop;
   String? selectedDate;
   SharedPreferences? prefs;
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
     final CashFlowState cashFlowState = ref.watch(cashFlowVmProvider);
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("cf_Shop");
+      lastSyncDate = prefs?.getString("cf_Date") ?? '';
     }
     if(cashFlowState.errorMessage!=null){
       Fluttertoast.showToast(
@@ -57,6 +60,9 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
               } else {
                 selectedDate = "Today";
                 prefs?.setString("cf_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("cf_Date", lastSyncDate!);
                 await ref.read(cashFlowVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "CF"});
               }
@@ -130,6 +136,16 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
               ),
             ],
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(),
+              Text(
+                lastSyncDate!,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
           Expanded(
             child: CustomCard(
               title: Row(
@@ -151,7 +167,7 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
               ),
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.65,
+                  height: MediaQuery.of(context).size.height * 0.60,
                   child: SingleChildScrollView(
                     child: Column(
                       children: [

@@ -49,7 +49,9 @@ class SoldItemVm extends _$SoldItemVm {
       totalAmount = allData[0].starTotalAmount!;
       totalQty = allData[0].starTotalQty!;
       state = SoldItemState.success(allData,totalQty,totalAmount);
-    } catch (e) {
+    }on RangeError catch(e) {
+      state = state.copyWith(isLoading: false);
+    }catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }
@@ -69,7 +71,7 @@ class SoldItemVm extends _$SoldItemVm {
         }
       }
       state = SoldItemState.success(filterData,totalQty,totalAmount);
-    } catch (e) {
+    }catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }

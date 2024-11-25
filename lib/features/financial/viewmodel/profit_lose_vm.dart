@@ -42,7 +42,8 @@ class ProfitLoseVm extends _$ProfitLoseVm {
       state = ProfitLoseState.success(allData);
     } catch (e) {
       state = state.copyWith(
-          errorMessage: 'Something went wrong', isLoading: false);
+          errorMessage: 'Something went wrong', isLoading: false
+      );
     }
   }
 

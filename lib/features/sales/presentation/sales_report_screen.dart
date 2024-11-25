@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starman/components/custom_card.dart';
@@ -28,6 +29,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
   final refreshController = RefreshController();
   List<StarNsItemList> allData = [];
   List<StarNsItemList> showData = [];
+  String? lastSyncDate = '';
 
   @override
   void initState() {
@@ -52,6 +54,7 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
     }
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("sales_Shop");
+      lastSyncDate = prefs?.getString("sales_Date") ?? '';
     }
     if (salesState.errorMessage != null) {
       Fluttertoast.showToast(
@@ -74,6 +77,9 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
                 selectedDate = "Today";
                 user = "All";
                 prefs?.setString("sales_Shop", selectedShop!);
+                DateTime lastDate = DateTime.now();
+                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                prefs?.setString("sales_Date", lastSyncDate!);
                 refreshController.loadFailed();
                 await ref.read(salesVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "NS"});
@@ -144,9 +150,13 @@ class _SalesReportScreenState extends ConsumerState<SalesReportScreen> {
             ],
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               userDropdown(state),
-            ],
+              Text(
+                lastSyncDate!,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),            ],
           ),
           Expanded(
             child: SingleChildScrollView(
