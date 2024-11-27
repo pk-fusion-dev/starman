@@ -11,6 +11,8 @@ import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/financial/models/cash_flow_model.dart';
 import 'package:starman/features/financial/viewmodel/cash_flow_vm.dart';
 
+import '../../star_links/providers/star_links_provider.dart';
+
 class CashFlowScreen extends ConsumerStatefulWidget {
   const CashFlowScreen({super.key});
 
@@ -37,7 +39,7 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
   Widget build(BuildContext context) {
     final CashFlowState cashFlowState = ref.watch(cashFlowVmProvider);
     if (prefs != null && selectedShop==null) {
-      selectedShop = prefs?.getString("cf_Shop");
+      // selectedShop = prefs?.getString("cf_Shop");
       lastSyncDate = prefs?.getString("cf_Date") ?? '';
     }
     if(cashFlowState.errorMessage!=null){

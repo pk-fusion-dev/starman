@@ -114,6 +114,7 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 hintText: "StarID",
+                counter: null,
               ),
               style: const TextStyle(
                 color: Colors.black,
@@ -124,16 +125,49 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
                 }
                 return null;
               },
+              onChanged: (value){
+                // Store the previous text to compare changes
+                String newValue = value.toUpperCase();
+
+                // Remove the '-' if the user deletes it
+                newValue = newValue.replaceAll('-', '');
+
+                // Insert '-' after 4 characters
+                if (newValue.length > 4) {
+                  newValue = '${newValue.substring(0, 4)}-${newValue.substring(4)}';
+                }
+
+                // Limit the text to 9 characters
+                if (newValue.length > 9) {
+                  newValue = newValue.substring(0, 9);
+                }
+
+                // Update the controller only if the value has changed
+                if (newValue != idController.text) {
+                  idController.value = TextEditingValue(
+                    text: newValue,
+                    selection: TextSelection.collapsed(offset: newValue.length),
+                  );
+                }
+              },
             ),
           ),
-          CupertinoButton(
+          CupertinoButton.filled(
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 Fluttertoast.showToast(msg: "Please Wait...");
                 _register();
               }
             },
-            child: const Text("REGISTER",style: TextStyle(color: Colors.white),),
+            child: const Text(
+              "REGISTER",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: .5,
+              ),
+            ),
           ),
         ],
       ),

@@ -8,9 +8,10 @@ final lightTheme = ThemeData(
     primary: ColorConst.lightPrimary,
     secondary: Colors.white,
   ),
-  expansionTileTheme: const ExpansionTileThemeData(
+  expansionTileTheme: ExpansionTileThemeData(
     collapsedTextColor: Colors.white,
     collapsedIconColor: Colors.white,
+    textColor: ColorConst.lightPrimary,
   ),
   listTileTheme: const ListTileThemeData(
     textColor: Colors.white,

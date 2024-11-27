@@ -11,10 +11,11 @@ class LoadingWidget extends StatelessWidget {
 
   Widget _buildLoadingIndicator() {
     return Container(
-      color: Colors.black.withOpacity(0.5),
+      color: Colors.black.withOpacity(0.6),
       child: const Center(
         child: CupertinoActivityIndicator(
           radius: 20,
+          color: Colors.white,
         ),
       ),
     );

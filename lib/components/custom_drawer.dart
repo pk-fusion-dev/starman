@@ -7,6 +7,7 @@ import 'package:starman/core/utils/expansionTilePorvider.dart';
 import 'package:starman/features/star_links/providers/star_links_provider.dart';
 import 'package:starman/routers/router.dart';
 import 'package:starman/theme/color_const.dart';
+import 'package:starman/theme/font_const.dart';
 
 class CustomDrawer extends ConsumerStatefulWidget {
   const CustomDrawer({super.key});
@@ -24,6 +25,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
   ExpansionTileController purchaseTile = ExpansionTileController();
   ExpansionTileController stockTile = ExpansionTileController();
   ExpansionTileController ostTile = ExpansionTileController();
+  int index = 0;
 
   @override
   void initState() {
@@ -33,7 +35,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
 
   Future getRmDays() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int index = ref.watch(expansionTileProvider);
+    index = ref.watch(expansionTileProvider);
     var currentDate = DateTime.now();
     String endDateString = prefs.getString("endDate")!;
     DateFormat dateFormat = DateFormat("dd/MM/yyyy");
@@ -116,10 +118,17 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
             child: ListView(
               children: [
                 ExpansionTile(
-                  title: const Text("ငွေစာရင်းအစီရင်ခံစာ"),
+                  title: Text(
+                      "ငွေစာရင်းအစီရင်ခံစာ",
+                      style: TextStyle(
+                        fontSize: FontConst.tileTitleSize,
+                      ),
+                  ),
                   controller: financialTile,
                   onExpansionChanged: (_){
-                    ref.read(expansionTileProvider.notifier).setIndex(1);
+                    int newIndex = 1;
+                    if(index==1){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
                   },
                   children: [
                     listItem(
@@ -157,10 +166,17 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text("အရောင်းအစီရင်ခံစာ"),
+                  title: Text(
+                      "အရောင်းအစီရင်ခံစာ",
+                    style: TextStyle(
+                      fontSize: FontConst.tileTitleSize,
+                    ),
+                  ),
                   controller: salesTile,
                   onExpansionChanged: (_){
-                    ref.read(expansionTileProvider.notifier).setIndex(2);
+                    int newIndex = 2;
+                    if(index==2){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
                   },
                   children: [
                     listItem(
@@ -182,10 +198,17 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text("အဝယ်အစီရင်ခံစာ"),
+                  title: Text(
+                      "အဝယ်အစီရင်ခံစာ",
+                    style: TextStyle(
+                      fontSize: FontConst.tileTitleSize,
+                    ),
+                  ),
                   controller: purchaseTile,
                   onExpansionChanged: (_){
-                    ref.read(expansionTileProvider.notifier).setIndex(3);
+                    int newIndex = 3;
+                    if(index==3){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
                   },
                   children: [
                     listItem(
@@ -207,15 +230,22 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text("ကုန်ပစ္စည်းအစီရင်ခံစာ"),
+                  title: Text(
+                      "ကုန်ပစ္စည်းအစီရင်ခံစာ",
+                    style: TextStyle(
+                      fontSize: FontConst.tileTitleSize,
+                    ),
+                  ),
                   controller: stockTile,
                   onExpansionChanged: (_){
-                    ref.read(expansionTileProvider.notifier).setIndex(4);
+                    int newIndex = 4;
+                    if(index==4){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
                   },
                   children: [
                     listItem(
                       context,
-                      const Icon(Icons.add_shopping_cart),
+                      const Icon(Icons.inventory),
                       "ကုန်ပစ္စည်းလက်ကျန်",
                       () {
                         context.goNamed(RouteName.stockBalance);
@@ -223,7 +253,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                     ),
                     listItem(
                       context,
-                      const Icon(Icons.add_shopping_cart),
+                      const Icon(Icons.inventory),
                       "အရေအတွက်နည်းနေသောကုန်ပစ္စည်း",
                       () {
                         context.goNamed(RouteName.stockReorder);
@@ -232,15 +262,22 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text("အကြွေးအစီရင်ခံစာ"),
+                  title: Text(
+                      "အကြွေးအစီရင်ခံစာ",
+                    style: TextStyle(
+                      fontSize: FontConst.tileTitleSize,
+                    ),
+                  ),
                   controller: ostTile,
                   onExpansionChanged: (_){
-                    ref.read(expansionTileProvider.notifier).setIndex(5);
+                    int newIndex = 5;
+                    if(index==5){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
                   },
                   children: [
                     listItem(
                       context,
-                      const Icon(Icons.add_shopping_cart),
+                      const Icon(Icons.attach_money),
                       "ရရန်ရှိအစီရင်ခံစာ",
                       () {
                         context.goNamed(RouteName.outstandingCustomer);
@@ -248,7 +285,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                     ),
                     listItem(
                       context,
-                      const Icon(Icons.add_shopping_cart),
+                      const Icon(Icons.attach_money),
                       "ပေးရန်ရှိအစီရင်ခံစာ",
                       () {
                         context.goNamed(RouteName.outstandingSupplier);
@@ -257,7 +294,12 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                   ],
                 ),
                 ListTile(
-                  title: const Text("စနစ်ထိမ်းသိမ်းခြင်း"),
+                  title: Text(
+                      "စနစ်ထိမ်းသိမ်းခြင်း",
+                    style: TextStyle(
+                      fontSize: FontConst.tileTitleSize,
+                    ),
+                  ),
                   onTap: (){
                     context.goNamed(RouteName.setting);
                   },

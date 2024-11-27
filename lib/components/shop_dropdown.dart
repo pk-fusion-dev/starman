@@ -14,6 +14,9 @@ class ShopDropdown extends ConsumerWidget {
     if (datas.isEmpty) {
       ref.read(starLinksProvider.notifier).getStarLinks();
     }
+    if(datas.isNotEmpty && selectedItem==null){
+      selectedItem=datas[0].userId.toString();
+    }
     return DropdownButton<String>(
       // dropdownColor: Theme.of(context).colorScheme.secondary,
       style: TextStyle(
