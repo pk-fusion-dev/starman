@@ -12,6 +12,8 @@ import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/stock/models/stock_reorder_model.dart';
 import 'package:starman/features/stock/view_model/stock_reorder_vm.dart';
 
+import '../../star_links/providers/star_links_provider.dart';
+
 class StockReorderScreen extends ConsumerStatefulWidget {
   const StockReorderScreen({super.key});
 
@@ -44,6 +46,7 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
     final StockReorderState stockReorderState =
         ref.watch(stockReorderVmProvider);
     allStock = stockReorderState.datas;
+    var shopList = ref.watch(starLinksProvider);
     if (allStock.isNotEmpty) {
       showStock.clear();
       maxCount = allStock.length < maxCount ? allStock.length : maxCount;
@@ -51,13 +54,16 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
         showStock.add(allStock[i]);
       }
     }
-    if (prefs != null && selectedShop==null) {
+    if (prefs != null && selectedShop == null) {
       selectedShop = prefs?.getString("stock_reorder_Shop");
       lastSyncDate = prefs?.getString("stock_reorder_Date") ?? '';
+      if (selectedShop == null && shopList.isNotEmpty) {
+        selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
+      }
     }
     if (stockReorderState.errorMessage != null) {
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -75,7 +81,8 @@ class _StockReorderScreenState extends ConsumerState<StockReorderScreen> {
                 selectedDate = "Today";
                 prefs?.setString("stock_reorder_Shop", selectedShop!);
                 DateTime lastDate = DateTime.now();
-                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                lastSyncDate =
+                    DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
                 prefs?.setString("stock_reorder_Date", lastSyncDate!);
                 await ref.read(stockReorderVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "RS"});

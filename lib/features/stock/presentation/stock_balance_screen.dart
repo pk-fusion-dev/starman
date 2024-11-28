@@ -12,6 +12,8 @@ import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/stock/models/stock_balance_model.dart';
 import 'package:starman/features/stock/view_model/stock_balance_vm.dart';
 
+import '../../star_links/providers/star_links_provider.dart';
+
 class StockBalanceScreen extends ConsumerStatefulWidget {
   const StockBalanceScreen({super.key});
 
@@ -43,6 +45,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
     final StockBalanceState stockBalanceState =
         ref.watch(stockBalanceVmProvider);
     allStock = stockBalanceState.stockList;
+    var shopList = ref.watch(starLinksProvider);
     if (allStock.isNotEmpty) {
       showStock.clear();
       maxCount = allStock.length < maxCount ? allStock.length : maxCount;
@@ -50,13 +53,16 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
         showStock.add(allStock[i]);
       }
     }
-    if (prefs != null && selectedShop==null) {
+    if (prefs != null && selectedShop == null) {
       selectedShop = prefs?.getString("stock_balance_Shop");
       lastSyncDate = prefs?.getString("stock_balance_Date") ?? '';
+      if (selectedShop == null && shopList.isNotEmpty) {
+        selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
+      }
     }
     if (stockBalanceState.errorMessage != null) {
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -75,7 +81,8 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
                 refreshController.loadFailed();
                 prefs?.setString("stock_balance_Shop", selectedShop!);
                 DateTime lastDate = DateTime.now();
-                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                lastSyncDate =
+                    DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
                 prefs?.setString("stock_balance_Date", lastSyncDate!);
                 await ref.read(stockBalanceVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "SB"});
@@ -252,7 +259,7 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
     );
   }
 
-  Widget listItem({required int no,required StarStockBalanceList item}) {
+  Widget listItem({required int no, required StarStockBalanceList item}) {
     return ListTile(
       titleTextStyle: Theme.of(context).textTheme.bodySmall,
       textColor: Theme.of(context).colorScheme.secondary,
@@ -260,13 +267,15 @@ class _StockBalanceScreenState extends ConsumerState<StockBalanceScreen> {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(child: Text(no.toString())),
-          Expanded(flex: 3, child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(item.starItemName),
-              Text(item.starCategoryName),
-            ],
-          )),
+          Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.starItemName),
+                  Text(item.starCategoryName),
+                ],
+              )),
           Expanded(
               flex: 2,
               child: Text(

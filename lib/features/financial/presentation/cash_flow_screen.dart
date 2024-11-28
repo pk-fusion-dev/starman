@@ -38,13 +38,17 @@ class _CashFlowScreenState extends ConsumerState<CashFlowScreen> {
   @override
   Widget build(BuildContext context) {
     final CashFlowState cashFlowState = ref.watch(cashFlowVmProvider);
+    var shopList = ref.watch(starLinksProvider);
     if (prefs != null && selectedShop==null) {
-      // selectedShop = prefs?.getString("cf_Shop");
+      selectedShop = prefs?.getString("cf_Shop");
       lastSyncDate = prefs?.getString("cf_Date") ?? '';
+      if(selectedShop==null && shopList.isNotEmpty){
+        selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
+      }
     }
     if(cashFlowState.errorMessage!=null){
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT
       );

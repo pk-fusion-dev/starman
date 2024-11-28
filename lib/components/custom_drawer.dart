@@ -42,7 +42,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
     DateTime endDate = dateFormat.parse(endDateString);
     int remainingDays = endDate.difference(currentDate).inDays;
     setState(() {
-      switch(index){
+      switch (index) {
         case 1:
           financialTile.expand();
           break;
@@ -119,16 +119,16 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
               children: [
                 ExpansionTile(
                   title: Text(
-                      "ငွေစာရင်းအစီရင်ခံစာ",
-                      style: TextStyle(
-                        fontSize: FontConst.tileTitleSize,
-                      ),
+                    "ငွေစာရင်းအစီရင်ခံစာ",
+                    style: TextStyle(
+                      fontSize: FontConst.tileTitleSize,
+                    ),
                   ),
                   controller: financialTile,
-                  onExpansionChanged: (_){
-                    int newIndex = 1;
-                    if(index==1){newIndex=0;}
-                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
+                  onExpansionChanged: (_) {
+                    // int newIndex = 1;
+                    // if(index==1){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(1);
                   },
                   children: [
                     listItem(
@@ -167,16 +167,16 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 ExpansionTile(
                   title: Text(
-                      "အရောင်းအစီရင်ခံစာ",
+                    "အရောင်းအစီရင်ခံစာ",
                     style: TextStyle(
                       fontSize: FontConst.tileTitleSize,
                     ),
                   ),
                   controller: salesTile,
-                  onExpansionChanged: (_){
-                    int newIndex = 2;
-                    if(index==2){newIndex=0;}
-                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
+                  onExpansionChanged: (_) {
+                    // int newIndex = 2;
+                    // if(index==2){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(2);
                   },
                   children: [
                     listItem(
@@ -199,16 +199,16 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 ExpansionTile(
                   title: Text(
-                      "အဝယ်အစီရင်ခံစာ",
+                    "အဝယ်အစီရင်ခံစာ",
                     style: TextStyle(
                       fontSize: FontConst.tileTitleSize,
                     ),
                   ),
                   controller: purchaseTile,
-                  onExpansionChanged: (_){
-                    int newIndex = 3;
-                    if(index==3){newIndex=0;}
-                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
+                  onExpansionChanged: (_) {
+                    // int newIndex = 3;
+                    // if(index==3){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(3);
                   },
                   children: [
                     listItem(
@@ -231,16 +231,16 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 ExpansionTile(
                   title: Text(
-                      "ကုန်ပစ္စည်းအစီရင်ခံစာ",
+                    "ကုန်ပစ္စည်းအစီရင်ခံစာ",
                     style: TextStyle(
                       fontSize: FontConst.tileTitleSize,
                     ),
                   ),
                   controller: stockTile,
-                  onExpansionChanged: (_){
-                    int newIndex = 4;
-                    if(index==4){newIndex=0;}
-                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
+                  onExpansionChanged: (_) {
+                    // int newIndex = 4;
+                    // if(index==4){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(4);
                   },
                   children: [
                     listItem(
@@ -263,16 +263,16 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 ExpansionTile(
                   title: Text(
-                      "အကြွေးအစီရင်ခံစာ",
+                    "အကြွေးအစီရင်ခံစာ",
                     style: TextStyle(
                       fontSize: FontConst.tileTitleSize,
                     ),
                   ),
                   controller: ostTile,
-                  onExpansionChanged: (_){
-                    int newIndex = 5;
-                    if(index==5){newIndex=0;}
-                    ref.read(expansionTileProvider.notifier).setIndex(newIndex);
+                  onExpansionChanged: (_) {
+                    // int newIndex = 5;
+                    // if(index==5){newIndex=0;}
+                    ref.read(expansionTileProvider.notifier).setIndex(5);
                   },
                   children: [
                     listItem(
@@ -295,12 +295,12 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 ListTile(
                   title: Text(
-                      "စနစ်ထိမ်းသိမ်းခြင်း",
+                    "စနစ်ထိမ်းသိမ်းခြင်း",
                     style: TextStyle(
                       fontSize: FontConst.tileTitleSize,
                     ),
                   ),
-                  onTap: (){
+                  onTap: () {
                     context.goNamed(RouteName.setting);
                   },
                 )
@@ -313,11 +313,13 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
               children: [
                 const Text("Logout"),
                 IconButton(
-                    onPressed: () async{
+                    onPressed: () async {
                       await logout();
                     },
-                    icon: const Icon(Icons.logout,color: Colors.white,)
-                )
+                    icon: const Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ))
               ],
             ),
           )
@@ -326,7 +328,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
     );
   }
 
-  Future<void> logout() async{
+  Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('starID');
     prefs.remove('pl_Shop');

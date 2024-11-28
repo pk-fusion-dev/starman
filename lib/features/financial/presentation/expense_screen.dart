@@ -11,6 +11,8 @@ import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/financial/models/expense_model.dart';
 import 'package:starman/features/financial/viewmodel/expense_vm.dart';
 
+import '../../star_links/providers/star_links_provider.dart';
+
 class ExpenseScreen extends ConsumerStatefulWidget {
   const ExpenseScreen({super.key});
 
@@ -39,13 +41,17 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     final ExpenseState expenseState = ref.watch(expenseVmProvider);
+    var shopList = ref.watch(starLinksProvider);
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("exp_Shop");
       lastSyncDate = prefs?.getString("exp_Date") ?? '';
+      if(selectedShop==null && shopList.isNotEmpty){
+        selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
+      }
     }
     if (expenseState.errorMessage!=null) {
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT);
     }

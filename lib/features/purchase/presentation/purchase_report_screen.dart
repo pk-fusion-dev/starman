@@ -11,6 +11,8 @@ import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/purchase/models/purchase_model.dart';
 import 'package:starman/features/purchase/viewmodel/purchase_vm.dart';
 
+import '../../star_links/providers/star_links_provider.dart';
+
 class PurchaseReportScreen extends ConsumerStatefulWidget {
   const PurchaseReportScreen({super.key});
 
@@ -43,13 +45,17 @@ class _PurchaseReportScreenState extends ConsumerState<PurchaseReportScreen> {
   @override
   Widget build(BuildContext context) {
     final PurchaseState purchaseState = ref.watch(purchaseVmProvider);
+    var shopList = ref.watch(starLinksProvider);
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("purchase_Shop");
       lastSyncDate = prefs?.getString("purchase_Date") ?? '';
+      if(selectedShop==null && shopList.isNotEmpty){
+        selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
+      }
     }
     if (purchaseState.errorMessage != null) {
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT);
     }

@@ -11,6 +11,8 @@ import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/financial/models/cash_flow_daily_model.dart';
 import 'package:starman/features/financial/viewmodel/cash_flow_daily_vm.dart';
 
+import '../../star_links/providers/star_links_provider.dart';
+
 class CashFlowDailyScreen extends ConsumerStatefulWidget {
   const CashFlowDailyScreen({super.key});
 
@@ -38,16 +40,19 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
   Widget build(BuildContext context) {
     final CashFlowDailyState cashFlowDailyState =
         ref.watch(cashFlowDailyVmProvider);
-    if (prefs != null && selectedShop==null) {
+    var shopList = ref.watch(starLinksProvider);
+    if (prefs != null && selectedShop == null) {
       selectedShop = prefs?.getString("cfd_Shop");
       lastSyncDate = prefs?.getString("cfd_Date") ?? '';
+      if (selectedShop == null && shopList.isNotEmpty) {
+        selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
+      }
     }
-    if(cashFlowDailyState.errorMessage!=null){
+    if (cashFlowDailyState.errorMessage != null) {
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
           gravity: ToastGravity.CENTER,
-          toastLength: Toast.LENGTH_SHORT
-      );
+          toastLength: Toast.LENGTH_SHORT);
     }
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +68,8 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
                 selectedDate = "Today";
                 prefs?.setString("cfd_Shop", selectedShop!);
                 DateTime lastDate = DateTime.now();
-                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                lastSyncDate =
+                    DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
                 prefs?.setString("cfd_Date", lastSyncDate!);
                 await ref.read(cashFlowDailyVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "CFD"});
@@ -86,8 +92,8 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
     );
   }
 
-  String formatedDecimal(num? num){
-    if(num!=null){
+  String formatedDecimal(num? num) {
+    if (num != null) {
       String formatedNum = num.toStringAsFixed(3);
       formatedNum = formatedNum.contains('.')
           ? formatedNum.replaceAll(RegExp(r'\.?0+$'), '')
@@ -174,26 +180,27 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
                     child: Column(
                       children: [
                         ListTile(
-                          titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                          titleTextStyle:
+                              Theme.of(context).textTheme.bodyMedium,
                           title: const Row(
                             children: [
                               Expanded(child: Text("စဉ်")),
-                              Expanded(flex: 3,child: Text("နေ့စွဲ")),
-                              Expanded(flex: 2,child: Text("ဝင်ငွေ")),
-                              Expanded(flex: 2,child: Text("ထွက်ငွေ")),
-                              Expanded(flex: 2,child: Text("ကျန်ငွေ")),
+                              Expanded(flex: 3, child: Text("နေ့စွဲ")),
+                              Expanded(flex: 2, child: Text("ဝင်ငွေ")),
+                              Expanded(flex: 2, child: Text("ထွက်ငွေ")),
+                              Expanded(flex: 2, child: Text("ကျန်ငွေ")),
                             ],
                           ),
                         ),
-                        if(data.starCFByDateDetailList != null)
+                        if (data.starCFByDateDetailList != null)
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: data.starCFByDateDetailList!.length,
-                            itemBuilder: (context,index){
+                            itemBuilder: (context, index) {
                               var item = data.starCFByDateDetailList![index];
                               return listItem(
-                                no: index,
+                                no: index + 1,
                                 date: item.starDate,
                                 income: item.starIncome,
                                 expense: item.starExpense,
@@ -213,7 +220,12 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
     );
   }
 
-  Widget listItem({int? no,String? date,double? income,double? expense,double? balance}) {
+  Widget listItem(
+      {int? no,
+      String? date,
+      double? income,
+      double? expense,
+      double? balance}) {
     return ListTile(
       titleTextStyle: Theme.of(context).textTheme.bodySmall,
       textColor: Theme.of(context).colorScheme.secondary,
@@ -221,10 +233,10 @@ class _CashFlowDailyScreenState extends ConsumerState<CashFlowDailyScreen> {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(child: Text(no.toString())),
-          Expanded(flex: 3,child: Text(date!)),
-          Expanded(flex: 2,child: Text(formatedDecimal(income))),
-          Expanded(flex: 2,child: Text(formatedDecimal(expense))),
-          Expanded(flex: 2,child: Text(formatedDecimal(balance))),
+          Expanded(flex: 3, child: Text(date!)),
+          Expanded(flex: 2, child: Text(formatedDecimal(income))),
+          Expanded(flex: 2, child: Text(formatedDecimal(expense))),
+          Expanded(flex: 2, child: Text(formatedDecimal(balance))),
         ],
       ),
     );

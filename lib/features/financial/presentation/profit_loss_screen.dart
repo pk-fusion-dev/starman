@@ -11,6 +11,8 @@ import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/financial/models/profit_loss_model.dart';
 import 'package:starman/features/financial/viewmodel/profit_lose_vm.dart';
 
+import '../../star_links/providers/star_links_provider.dart';
+
 class ProfitLoseScreen extends ConsumerStatefulWidget {
   const ProfitLoseScreen({super.key});
 
@@ -36,13 +38,17 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
   @override
   Widget build(BuildContext context) {
     final ProfitLoseState profitLoseState = ref.watch(profitLoseVmProvider);
+    var shopList = ref.watch(starLinksProvider);
     if (prefs != null && selectedShop==null) {
       selectedShop = prefs?.getString("pl_Shop");
       lastSyncDate = prefs?.getString("pl_Date") ?? '';
+      if(selectedShop==null && shopList.isNotEmpty){
+        selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
+      }
     }
     if(profitLoseState.errorMessage!=null){
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT
       );

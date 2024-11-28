@@ -10,6 +10,8 @@ import 'package:starman/components/shop_dropdown.dart';
 import 'package:starman/features/outstanding/models/outstanding_customer_module.dart';
 import 'package:starman/features/outstanding/viewmodel/outstanding_customer_vm.dart';
 
+import '../../star_links/providers/star_links_provider.dart';
+
 class OutstandingCustomerScreen extends ConsumerStatefulWidget {
   const OutstandingCustomerScreen({super.key});
 
@@ -39,13 +41,17 @@ class _OutstandingCustomerScreenState
   Widget build(BuildContext context) {
     final OutstandingCustomerState outstandingCustomerState =
         ref.watch(outstandingCustomerVmProvider);
-    if (prefs != null && selectedShop==null) {
+    var shopList = ref.watch(starLinksProvider);
+    if (prefs != null && selectedShop == null) {
       selectedShop = prefs?.getString("oc_Shop");
       lastSyncDate = prefs?.getString("oc_Date") ?? '';
+      if (selectedShop == null && shopList.isNotEmpty) {
+        selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
+      }
     }
     if (outstandingCustomerState.errorMessage != null) {
       Fluttertoast.showToast(
-          msg: "Operation fails",
+          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
           gravity: ToastGravity.CENTER,
           toastLength: Toast.LENGTH_SHORT);
     }
@@ -62,7 +68,8 @@ class _OutstandingCustomerScreenState
               } else {
                 prefs?.setString("oc_Shop", selectedShop!);
                 DateTime lastDate = DateTime.now();
-                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                lastSyncDate =
+                    DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
                 prefs?.setString("oc_Date", lastSyncDate!);
                 await ref
                     .read(outstandingCustomerVmProvider.notifier)

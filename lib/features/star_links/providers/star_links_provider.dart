@@ -16,6 +16,13 @@ class StarLinksProvider extends Notifier<List<StarLinksModel>> {
   @override
   build() => <StarLinksModel>[];
 
+  String getInitShop(){
+    if(state.isNotEmpty){
+      return state[0].userId.toString();
+    }
+    return '';
+  }
+
   Future<void> getStarLinks() async {
     state.clear();
     List<StarLinksModel> lists = [];

@@ -17,9 +17,11 @@ class CashFlowDailyModel {
 
   factory CashFlowDailyModel.fromJson(Map<String, dynamic> json) {
     return CashFlowDailyModel(
-      starCFByDateDetailList: (json['starCFByDateDetailList'] as List)
-          .map((item) => StarCFByDateDetail.fromJson(item))
-          .toList(),
+      starCFByDateDetailList: json['starCFByDateDetailList'] == null
+          ? []
+          : (json['starCFByDateDetailList'] as List)
+              .map((item) => StarCFByDateDetail.fromJson(item))
+              .toList(),
       starTotalIncome: json['starTotalIncome'].toDouble() ?? 0,
       starTotalExpense: json['starTotalExpense'].toDouble() ?? 0,
       starTotalBalance: json['starTotalBalance'].toDouble() ?? 0,
@@ -54,10 +56,10 @@ class StarCFByDateDetail {
 
   factory StarCFByDateDetail.fromJson(Map<String, dynamic> json) {
     return StarCFByDateDetail(
-      starDate: json['starDate'],
-      starIncome: json['starIncome'].toDouble(),
-      starExpense: json['starExpense'].toDouble(),
-      starBalance: json['starBalance'].toDouble(),
+      starDate: json['starDate'] ?? '-',
+      starIncome: json['starIncome'].toDouble() ?? 0,
+      starExpense: json['starExpense'].toDouble() ?? 0,
+      starBalance: json['starBalance'].toDouble() ?? 0,
     );
   }
 

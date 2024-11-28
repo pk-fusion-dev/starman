@@ -68,9 +68,9 @@ class ZipManager {
       // Assuming each item in the list is a map and filtering by selectedDateFilter
       var datas = parsedJson.map((data) => fromJson(data)).toList();
       return datas;
-    }on PathNotFoundException catch(e){
+    } on PathNotFoundException catch (_) {
       return [];
-    }catch (e) {
+    } catch (e) {
       log('Error parsing JSON data: $e');
     }
   }
@@ -90,9 +90,9 @@ class ZipManager {
       var datas = parsedJson.map((data) => fromJson(data)).toList();
       // print(datas);
       return datas;
-    }on PathNotFoundException catch(e){
+    } on PathNotFoundException catch (e) {
       return [];
-    }catch (e) {
+    } catch (e) {
       log('Error parsing JSON data: $e');
     }
   }
