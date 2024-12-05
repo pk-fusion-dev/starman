@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:starman/core/utils/expansionTilePorvider.dart';
+import 'package:starman/core/utils/expansion_tile_porvider.dart';
 import 'package:starman/features/star_links/providers/star_links_provider.dart';
 import 'package:starman/routers/router.dart';
 import 'package:starman/theme/color_const.dart';
@@ -263,9 +263,10 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 ExpansionTile(
                   title: Text(
-                    "အကြွေးအစီရင်ခံစာ",
+                    "အကြေွးအစီရင်ခံစာ",
                     style: TextStyle(
                       fontSize: FontConst.tileTitleSize,
+                      // fontFamily: "pyidaungsu_1.8.3_Regddular",
                     ),
                   ),
                   controller: ostTile,
@@ -295,7 +296,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 ListTile(
                   title: Text(
-                    "စနစ်ထိမ်းသိမ်းခြင်း",
+                    "စနစ်ထိန်းသိမ်းခြင်း",
                     style: TextStyle(
                       fontSize: FontConst.tileTitleSize,
                     ),

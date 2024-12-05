@@ -29,16 +29,15 @@ class SalesVm extends _$SalesVm {
       final datas = await salesService.getNSReport(params: params);
       allData = datas;
       allVoucher = allData[0].starNsItemList!;
-      for(var i in allVoucher){
-        if(!users.contains(i.starUserName)){
+      for (var i in allVoucher) {
+        if (!users.contains(i.starUserName)) {
           users.add(i.starUserName!);
         }
         totalAmount += i.starAmount!;
         totalPaidAmount += i.starPaidAmount!;
       }
       state = SalesState.success(
-          datas,allVoucher,totalAmount,totalPaidAmount,users
-      );
+          datas, allVoucher, totalAmount, totalPaidAmount, users);
     } catch (e) {
       // print(e.toString());
       state = state.copyWith(
@@ -58,19 +57,18 @@ class SalesVm extends _$SalesVm {
         allData.add(data);
       }
       allVoucher = allData[0].starNsItemList!;
-      for(var i in allVoucher){
-        if(!users.contains(i.starUserName)){
+      for (var i in allVoucher) {
+        if (!users.contains(i.starUserName)) {
           users.add(i.starUserName!);
         }
-        totalAmount+=i.starAmount!;
-        totalPaidAmount+=i.starPaidAmount!;
+        totalAmount += i.starAmount!;
+        totalPaidAmount += i.starPaidAmount!;
       }
       state = SalesState.success(
-          allData,allVoucher,totalAmount,totalPaidAmount,users
-      );
-    }on RangeError catch(e){
+          allData, allVoucher, totalAmount, totalPaidAmount, users);
+    } on RangeError catch (_) {
       state = state.copyWith(isLoading: false);
-    }catch (e) {
+    } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }
@@ -88,16 +86,15 @@ class SalesVm extends _$SalesVm {
         }
       }
       allVoucher = filterData[0].starNsItemList!;
-      for(var i in allVoucher){
-        if(!users.contains(i.starUserName)){
+      for (var i in allVoucher) {
+        if (!users.contains(i.starUserName)) {
           users.add(i.starUserName!);
         }
-        totalAmount+=i.starAmount!;
-        totalPaidAmount+=i.starPaidAmount!;
+        totalAmount += i.starAmount!;
+        totalPaidAmount += i.starPaidAmount!;
       }
       state = SalesState.success(
-          filterData,allVoucher,totalAmount,totalPaidAmount,users
-      );
+          filterData, allVoucher, totalAmount, totalPaidAmount, users);
     } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
@@ -111,23 +108,24 @@ class SalesVm extends _$SalesVm {
     state = state.copyWith(isLoading: true);
     try {
       for (var voucher in allVoucher) {
-        if (user=="All" ||voucher.starUserName == user) {
+        if (user == "All" || voucher.starUserName == user) {
           filterVoucher.add(voucher);
         }
       }
-      for(var i in filterVoucher){
-        totalAmount+=i.starAmount!;
-        totalPaidAmount+=i.starPaidAmount!;
+      for (var i in filterVoucher) {
+        totalAmount += i.starAmount!;
+        totalPaidAmount += i.starPaidAmount!;
       }
       state = state.copyWith(
-          vouchers: filterVoucher,
-          isLoading: false,
-          totalPaidAmount: totalPaidAmount,
-          totalAmount: totalAmount,
+        vouchers: filterVoucher,
+        isLoading: false,
+        totalPaidAmount: totalPaidAmount,
+        totalAmount: totalAmount,
       );
     } catch (e) {
       state = state.copyWith(
-          errorMessage: 'Something went wrong', isLoading: false,
+        errorMessage: 'Something went wrong',
+        isLoading: false,
       );
     }
   }
@@ -153,48 +151,47 @@ class SalesState {
   });
 
   factory SalesState.initial() => SalesState(
-      isLoading: false,
-    datas: [],
-    vouchers: [],
-    totalAmount: 0,
-    totalPaidAmount: 0,
-    users: [],
-  );
-
-  factory SalesState.success(
-      List<SalesModel> datas,
-      List<StarNsItemList> vouchers,
-      double totalAmount,
-      double totalPaidAmount,
-      List<String> users,
-      ) =>
-      SalesState(
-          isLoading: false,
-          datas: datas,
-          vouchers: vouchers,
-          errorMessage: null,
-          totalAmount: totalAmount,
-          totalPaidAmount: totalPaidAmount,
-          users: users,
+        isLoading: false,
+        datas: [],
+        vouchers: [],
+        totalAmount: 0,
+        totalPaidAmount: 0,
+        users: [],
       );
 
-  SalesState copyWith(
-      {bool? isLoading,
-        String? errorMessage,
-        List<SalesModel>? datas,
-        List<StarNsItemList>? vouchers,
-        double? totalAmount,
-        double? totalPaidAmount,
-        List<String>? users,
-      }) {
+  factory SalesState.success(
+    List<SalesModel> datas,
+    List<StarNsItemList> vouchers,
+    double totalAmount,
+    double totalPaidAmount,
+    List<String> users,
+  ) =>
+      SalesState(
+        isLoading: false,
+        datas: datas,
+        vouchers: vouchers,
+        errorMessage: null,
+        totalAmount: totalAmount,
+        totalPaidAmount: totalPaidAmount,
+        users: users,
+      );
+
+  SalesState copyWith({
+    bool? isLoading,
+    String? errorMessage,
+    List<SalesModel>? datas,
+    List<StarNsItemList>? vouchers,
+    double? totalAmount,
+    double? totalPaidAmount,
+    List<String>? users,
+  }) {
     return SalesState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      datas: datas ?? this.datas,
-      vouchers: vouchers ?? this.vouchers,
-      totalAmount: totalAmount ?? this.totalAmount,
-      totalPaidAmount: totalPaidAmount ?? this.totalPaidAmount,
-      users: users ?? this.users
-    );
+        isLoading: isLoading ?? this.isLoading,
+        errorMessage: errorMessage ?? this.errorMessage,
+        datas: datas ?? this.datas,
+        vouchers: vouchers ?? this.vouchers,
+        totalAmount: totalAmount ?? this.totalAmount,
+        totalPaidAmount: totalPaidAmount ?? this.totalPaidAmount,
+        users: users ?? this.users);
   }
 }

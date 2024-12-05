@@ -25,7 +25,7 @@ class PurchaseItemVm extends _$PurchaseItemVm {
       allData = datas;
       totalAmount = datas[0].starTotalAmount!;
       totalQty = datas[0].starTotalQty!;
-      state = PurchaseItemState.success(datas,totalQty,totalAmount);
+      state = PurchaseItemState.success(datas, totalQty, totalAmount);
     } catch (e) {
       // print(e.toString());
       state = state.copyWith(
@@ -44,10 +44,10 @@ class PurchaseItemVm extends _$PurchaseItemVm {
       }
       totalAmount = allData[0].starTotalAmount!;
       totalQty = allData[0].starTotalQty!;
-      state = PurchaseItemState.success(allData,totalQty,totalAmount);
-    }on RangeError catch(e){
+      state = PurchaseItemState.success(allData, totalQty, totalAmount);
+    } on RangeError catch (_) {
       state = state.copyWith(isLoading: false);
-    }catch (e) {
+    } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }
@@ -66,7 +66,7 @@ class PurchaseItemVm extends _$PurchaseItemVm {
           totalQty += data.starTotalQty!;
         }
       }
-      state = PurchaseItemState.success(filterData,totalQty,totalAmount);
+      state = PurchaseItemState.success(filterData, totalQty, totalAmount);
     } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
@@ -81,37 +81,38 @@ class PurchaseItemState {
   final double totalQty;
   final double totalAmount;
 
-  PurchaseItemState(
-      {
-        required this.isLoading,
-        this.errorMessage,
-        required this.datas,
-        required this.totalQty,
-        required this.totalAmount,
-      });
+  PurchaseItemState({
+    required this.isLoading,
+    this.errorMessage,
+    required this.datas,
+    required this.totalQty,
+    required this.totalAmount,
+  });
 
-  factory PurchaseItemState.initial() =>
-      PurchaseItemState(
-          isLoading: false, datas: [],totalQty: 0,totalAmount: 0,
+  factory PurchaseItemState.initial() => PurchaseItemState(
+        isLoading: false,
+        datas: [],
+        totalQty: 0,
+        totalAmount: 0,
       );
 
-  factory PurchaseItemState.success(List<PurchaseItemModel> datas,double totalQty,double totalAmount) =>
+  factory PurchaseItemState.success(
+          List<PurchaseItemModel> datas, double totalQty, double totalAmount) =>
       PurchaseItemState(
-          isLoading: false,
+        isLoading: false,
         datas: datas,
         errorMessage: null,
         totalQty: totalQty,
         totalAmount: totalAmount,
       );
 
-  PurchaseItemState copyWith(
-      {
-        bool? isLoading,
-        String? errorMessage,
-        List<PurchaseItemModel>? datas,
-        double? totalQty,
-        double? totalAmount,
-      }) {
+  PurchaseItemState copyWith({
+    bool? isLoading,
+    String? errorMessage,
+    List<PurchaseItemModel>? datas,
+    double? totalQty,
+    double? totalAmount,
+  }) {
     return PurchaseItemState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:starman/theme/color_const.dart';
 
 final darkTheme = ThemeData(
+  fontFamily: "pyidaungsu_1.8.3_Regular",
   colorScheme: ColorScheme.light(
     brightness: Brightness.light,
     surface: ColorConst.lightSurface,

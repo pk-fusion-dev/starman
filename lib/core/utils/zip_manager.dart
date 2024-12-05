@@ -90,7 +90,7 @@ class ZipManager {
       var datas = parsedJson.map((data) => fromJson(data)).toList();
       // print(datas);
       return datas;
-    } on PathNotFoundException catch (e) {
+    } on PathNotFoundException catch (_) {
       return [];
     } catch (e) {
       log('Error parsing JSON data: $e');

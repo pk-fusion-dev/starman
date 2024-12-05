@@ -52,9 +52,9 @@ class OutstandingCustomerVm extends _$OutstandingCustomerVm {
         allData,
         allList,
       );
-    }on RangeError catch(e){
+    } on RangeError catch (_) {
       state = state.copyWith(isLoading: false);
-    }catch (e) {
+    } catch (e) {
       // print(e.toString());
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);

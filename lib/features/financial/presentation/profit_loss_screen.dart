@@ -25,6 +25,7 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
   String? selectedDate;
   SharedPreferences? prefs;
   String? lastSyncDate = '';
+  bool isFirstLogin = true;
 
   @override
   void initState() {
@@ -39,18 +40,41 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
   Widget build(BuildContext context) {
     final ProfitLoseState profitLoseState = ref.watch(profitLoseVmProvider);
     var shopList = ref.watch(starLinksProvider);
-    if (prefs != null && selectedShop==null) {
+    // alert box for license
+    if (prefs != null && shopList.isEmpty && isFirstLogin) {
+      isFirstLogin = false;
+      var currentDate = DateTime.now();
+      String endDateString = prefs!.getString("endDate")!;
+      DateFormat dateFormat = DateFormat("dd/MM/yyyy");
+      DateTime endDate = dateFormat.parse(endDateString);
+      int remainingDays = endDate.difference(currentDate).inDays;
+      if (remainingDays <= 7) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              // title: const Text("Alert"),
+              content: Text(
+                "လိုင်စင်သက်တမ်းကုန်ဆုံးရန် $remainingDays ရက်သာလိုပါတော့သည်။",
+              ),
+            ),
+          );
+        });
+      }
+    }
+    //
+    if (prefs != null && selectedShop == null) {
       selectedShop = prefs?.getString("pl_Shop");
       lastSyncDate = prefs?.getString("pl_Date") ?? '';
-      if(selectedShop==null && shopList.isNotEmpty){
+      if (selectedShop == null && shopList.isNotEmpty) {
         selectedShop = ref.read(starLinksProvider.notifier).getInitShop();
       }
     }
-    if(profitLoseState.errorMessage!=null){
+    if (profitLoseState.errorMessage != null) {
       Fluttertoast.showToast(
-          msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
-          gravity: ToastGravity.CENTER,
-          toastLength: Toast.LENGTH_SHORT
+        msg: "လုပ်ဆောင်မှုမအောင်မြင်ပါ",
+        gravity: ToastGravity.CENTER,
+        toastLength: Toast.LENGTH_SHORT,
       );
     }
     return Scaffold(
@@ -67,7 +91,8 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
                 selectedDate = "Today";
                 prefs?.setString("pl_Shop", selectedShop!);
                 DateTime lastDate = DateTime.now();
-                lastSyncDate = DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
+                lastSyncDate =
+                    DateFormat('yyyy-MM-dd h:m:s a').format(lastDate);
                 prefs?.setString("pl_Date", lastSyncDate!);
                 await ref.read(profitLoseVmProvider.notifier).fetchData(
                     params: {"user_id": selectedShop!, "type": "PL"});
@@ -163,9 +188,11 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
                             listItem("ကုန်ပစ္စည်းအရင်းတန်ဖိုး",
                                 data.starSoldItemValue ?? 0,
                                 isOut: true),
-                            listItem("အဝယ်လျော့စျေး", data.starPurchaseDiscount ?? 0),
+                            listItem("အဝယ်လျော့စျေး",
+                                data.starPurchaseDiscount ?? 0),
                             listItem("အခြားဝင်ငွေ", data.starOtherIncome ?? 0),
-                            listItem("စုစုပေါင်းဝင်ငွေ", data.starTotalIncome ?? 0),
+                            listItem(
+                                "စုစုပေါင်းဝင်ငွေ", data.starTotalIncome ?? 0),
                           ],
                         ),
                         ExpansionTile(
@@ -174,15 +201,16 @@ class _ProfitLoseScreenState extends ConsumerState<ProfitLoseScreen> {
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           children: [
-                            listItem("အရောင်းလျော့စျေး", data.starSalesDiscount ?? 0,
+                            listItem(
+                                "အရောင်းလျော့စျေး", data.starSalesDiscount ?? 0,
                                 isOut: true),
                             listItem("အရောင်းအခွန်", data.starSalesTax ?? 0,
                                 isOut: true),
                             listItem("အဝယ်အခွန်", data.starPurchaseTax ?? 0),
                             listItem("ကုန်ပစ္စည်းဆုံးရှုံးတန်ဖိုး",
                                 data.starDamagedLostAmount ?? 0),
-                            listItem(
-                                "စုစုပေါင်းအသုံးစရိတ်", data.starTotalExpense ?? 0),
+                            listItem("စုစုပေါင်းအသုံးစရိတ်",
+                                data.starTotalExpense ?? 0),
                           ],
                         ),
                       ],

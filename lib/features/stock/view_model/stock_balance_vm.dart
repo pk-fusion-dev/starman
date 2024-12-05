@@ -54,7 +54,7 @@ class StockBalanceVm extends _$StockBalanceVm {
     try {
       var datas = await ZipManager.loadDataStockBalance(
           "StarSB.json", StockBalanceModel.fromJson);
-      for(var data in datas){
+      for (var data in datas) {
         allData.add(data);
       }
       allStock = allData[0].starStockBalanceList!;
@@ -70,9 +70,9 @@ class StockBalanceVm extends _$StockBalanceVm {
         allData[0].starTotalQty!,
         allData[0].starTotalAmount!,
       );
-    }on RangeError catch(e){
+    } on RangeError catch (_) {
       state = state.copyWith(isLoading: false);
-    }catch (e) {
+    } catch (e) {
       state = state.copyWith(
           errorMessage: 'Something went wrong', isLoading: false);
     }
