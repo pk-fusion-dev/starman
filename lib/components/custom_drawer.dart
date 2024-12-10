@@ -263,7 +263,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 ExpansionTile(
                   title: Text(
-                    "အကြေွးအစီရင်ခံစာ",
+                    "အကြွေးအစီရင်ခံစာ",
                     style: TextStyle(
                       fontSize: FontConst.tileTitleSize,
                       // fontFamily: "pyidaungsu_1.8.3_Regddular",
