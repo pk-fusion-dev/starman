@@ -11,7 +11,7 @@ class CustomCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(.5))],
+        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: .5))],
         color: ColorConst.lightSurface,
       ),
       child: Column(

@@ -106,7 +106,7 @@ class _RegisterStarIdScreenState extends ConsumerState<RegisterStarIdScreen> {
             margin: const EdgeInsets.all(20),
             padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary.withOpacity(.5),
+              color: Theme.of(context).colorScheme.secondary.withValues(alpha:.5),
               borderRadius: BorderRadius.circular(10),
             ),
             child: TextFormField(
