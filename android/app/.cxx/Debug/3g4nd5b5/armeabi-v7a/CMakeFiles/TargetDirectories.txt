@@ -1,0 +1,2 @@
+/Users/bluemix/Documents/Development/Projects/Flutter Projects/starman/android/app/.cxx/Debug/3g4nd5b5/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/bluemix/Documents/Development/Projects/Flutter Projects/starman/android/app/.cxx/Debug/3g4nd5b5/armeabi-v7a/CMakeFiles/rebuild_cache.dir
