@@ -1,4 +1,4 @@
-package com.example.starman
+package com.digitalfusion.starman
 
 import io.flutter.embedding.android.FlutterActivity
 

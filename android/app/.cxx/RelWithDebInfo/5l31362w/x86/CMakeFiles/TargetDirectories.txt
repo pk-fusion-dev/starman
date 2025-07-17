@@ -1,0 +1,2 @@
+/Users/bluemix/Documents/Development/Projects/Flutter Projects/starman/android/app/.cxx/RelWithDebInfo/5l31362w/x86/CMakeFiles/edit_cache.dir
+/Users/bluemix/Documents/Development/Projects/Flutter Projects/starman/android/app/.cxx/RelWithDebInfo/5l31362w/x86/CMakeFiles/rebuild_cache.dir

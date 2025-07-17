@@ -20,11 +20,11 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
   String? rmDay;
   String? finalEndDate;
   String? starID;
-  ExpansionTileController financialTile = ExpansionTileController();
-  ExpansionTileController salesTile = ExpansionTileController();
-  ExpansionTileController purchaseTile = ExpansionTileController();
-  ExpansionTileController stockTile = ExpansionTileController();
-  ExpansionTileController ostTile = ExpansionTileController();
+  ExpansibleController financialTile = ExpansibleController();
+  ExpansibleController salesTile = ExpansibleController();
+  ExpansibleController purchaseTile = ExpansibleController();
+  ExpansibleController stockTile = ExpansibleController();
+  ExpansibleController ostTile = ExpansibleController();
   int index = 0;
 
   @override
